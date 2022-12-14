@@ -11,9 +11,9 @@ const API_SERVICE_URL = "https://hidester.com";
 const middle = createProxyMiddleware({
     target: API_SERVICE_URL,
     changeOrigin: true,
-    pathRewrite: {
-      [`^/`]: "",
-    },
+    end(proxyRes, req, res) {
+      console.log("berrrr")
+    }
   });
 
 app.use(morgan("dev"));
@@ -24,9 +24,7 @@ app.get("/info", (req, res, next) => {
 });
 
 // Proxy endpoints
-app.use("/", (req, res, next) => {
-    middle(req, res, next).then(data => console.log(data))
-});
+app.use("/", middle);
 // Start the Proxy
 app.listen(PORT, () => {
   console.log(`Starting Proxy at port ${PORT}`);
