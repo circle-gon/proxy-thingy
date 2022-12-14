@@ -7,20 +7,24 @@ const app = express();
 
 // Configuration
 const PORT = 3000;
-const API_SERVICE_URL = "https://jsonplaceholder.typicode.com";
+const API_SERVICE_URL = "https://discord.com";
 
 app.use(morgan('dev'));
 
 // Info GET endpoint
 app.get('/info', (req, res, next) => {
-   res.send('This is a proxy service which proxies to Billing and Account APIs.');
+   res.send('This is a proxy service.');
 });
 
 // Proxy endpoints
-app.use('/json_placeholder', createProxyMiddleware({
+app.use('/', createProxyMiddleware({
    target: API_SERVICE_URL,
    changeOrigin: true,
    pathRewrite: {
-       [`^/json_placeholder`]: '',
+       [`^/`]: '',
    },
 }));
+// Start the Proxy
+app.listen(PORT, () => {
+   console.log(`Starting Proxy at port ${PORT}`);
+});
