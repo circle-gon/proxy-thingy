@@ -7,7 +7,7 @@ const app = express();
 
 // Configuration
 const PORT = 3000;
-const API_SERVICE_URL = "https://discord.com/";
+const API_SERVICE_URL = "https://poki.com";
 const middle = createProxyMiddleware({
     target: API_SERVICE_URL,
     changeOrigin: true,
