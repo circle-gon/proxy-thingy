@@ -1,31 +1,21 @@
-import express from "express";
-import morgan from "morgan";
-import { createProxyMiddleware } from "http-proxy-middleware";
+import {createServer} from "http"
+import {createProxyServer} from "http-proxy"
 
-// Create Express Server
-const app = express();
+//
+// Create a proxy server with custom application logic
+//
+const proxy = createProxyServer({});
 
-// Configuration
-const PORT = 3000;
-const API_SERVICE_URL = "https://poki.com/";
-const middle = createProxyMiddleware({
-    target: API_SERVICE_URL,
-    changeOrigin: true,
-    end(proxyRes, req, res) {
-      console.log("berrrr")
-    }
-  });
-
-app.use(morgan("dev"));
-
-// Info GET endpoint
-app.get("/info", (req, res, next) => {
-  res.send("This is a proxy service.");
+//
+// Create your custom server and just call `proxy.web()` to proxy
+// a web request to the target passed in the options
+// also you can use `proxy.ws()` to proxy a websockets request
+//
+const server = createServer(function(req, res) {
+  // You can define here your custom logic to handle the request
+  // and then proxy the request.
+  proxy.web(req, res, { target: 'http://127.0.0.1:5050' });
 });
 
-// Proxy endpoints
-app.use("/", middle);
-// Start the Proxy
-app.listen(PORT, () => {
-  console.log(`Starting Proxy at port ${PORT}`);
-});
+console.log("listening on port 5050")
+server.listen(3000);
