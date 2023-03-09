@@ -18,7 +18,7 @@ app.get("/info", (req, res, next) => {
 
 app.get("/", (req, res, next) => {
   const url = req.query.url
-  res.send(url);
+  proxyServer.web()
 })
 // Start the Proxy
 app.listen(PORT, () => {
