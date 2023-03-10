@@ -16,17 +16,20 @@ const SCRIPT_TAG = `<script type="module" src="registerServiceWorker.js"></scrip
 const options = {
   changeOrigin: true,
   router(req) {
-    return decodeURIComponent(getFirst(req.url))
+    return getFirst(req.url)
   },
   selfHandleResponse: true,
   onProxyRes: responseInterceptor(async (resBuffer, proxyRes, req, res) => {
     const response = resBuffer.toString("utf-8");
     return response.replace("<head>", "<head>" + SCRIPT_TAG);
   }),
+  pathRewrite: {
+    "^/*/": ""
+  }
 };
 
 function getFirst(url) {
-  return url.slice(1).split("/")[0];
+  return decodeURIComponent(url.slice(1).split("/")[0]);
 }
 
 function filter(pathname, req) {
@@ -38,7 +41,7 @@ function filter(pathname, req) {
 function isValidURL(test) {
   let url;
   try {
-    url = new URL(decodeURIComponent(test));
+    url = new URL(test);
   } catch (e) {
     return false;
   }
