@@ -1,25 +1,25 @@
-import http from "http"
+import express from "express";
+import morgan from "morgan";
+import {createProxyMiddleware} from "http-proxy-middleware";
 
-http.createServer(function(request, response) {
-  const proxy_request = http.request({
-    port: 80,
-    host: request.headers.host,
-    method: request.method,
-    path: request.url
-  })
-  proxy_request.addListener('response', function (proxy_response) {
-    proxy_response.addListener('data', function(chunk) {
-      response.write(chunk, 'binary');
-    });
-    proxy_response.addListener('end', function() {
-      response.end();
-    });
-    response.writeHead(proxy_response.statusCode, proxy_response.headers);
-  });
-  request.addListener('data', function(chunk) {
-    proxy_request.write(chunk, 'binary');
-  });
-  request.addListener('end', function() {
-    proxy_request.end();
-  });
-}).listen(3000);
+// Create Express Server
+const app = express();
+
+// Configuration
+const PORT = 3000;
+
+app.use(morgan("dev"));
+
+// Info GET endpoint
+app.get("/info", (req, res, next) => {
+  res.send("This is a proxy service.");
+});
+
+app.use(createProxyMiddleware({
+  
+}))
+
+// Start the Proxy
+app.listen(PORT, () => {
+  console.log(`Starting Proxy at port ${PORT}`);
+});
