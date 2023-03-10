@@ -16,7 +16,7 @@ const SCRIPT_TAG = `<script type="module" src="registerServiceWorker.js"></scrip
 const options = {
   changeOrigin: true,
   router(req) {
-    return req.query.url;
+    return req.params.url;
   },
   selfHandleResponse: true,
   onProxyRes: responseInterceptor(async (resBuffer, proxyRes, req, res) => {
@@ -26,7 +26,8 @@ const options = {
 };
 
 function filter(pathname, req) {
-  const url = req.query.url;
+  const url = req.url.slice(1);
+  console.log(req)
   return url !== undefined && isValidURL(url);
 }
 
@@ -56,14 +57,13 @@ registerScripts("sw.js", "registerServiceWorker.js")
 
 app.use(createProxyMiddleware(filter, options));
 
+app.get("/:url", (req, res) => {
+  res.send(`URL "${req.params.url}" is not a valid url.`)
+})
+
 // Info GET endpoint
 app.get("/", (req, res, next) => {
-  const url = req.query.url;
-  if (url !== undefined) {
-    res.send(`URL "${url}" is not a valid URL! Please enter a valid url.`);
-  } else {
-    res.send("This is a proxy service.");
-  }
+  res.send("This is a proxy service.");
 });
 
 // Start the Proxy
