@@ -12,24 +12,26 @@ const app = express();
 // Configuration
 const PORT = 3000;
 const SCRIPT_TAG = `<script type="module" src="registerServiceWorker.js"></script>`;
+const BASE_TAG = `<base href="." />`;
 
 const options = {
   changeOrigin: true,
   router(req) {
-    return getFirst(req.url)
+    return getFirst(req.url);
   },
   selfHandleResponse: true,
   onProxyRes: responseInterceptor(async (resBuffer, proxyRes, req, res) => {
     const response = resBuffer.toString("utf-8");
-    return response.replace("<head>", "<head>" + SCRIPT_TAG);
+    const baseTag = `<base href="https://adaptive-tricolor-whip.glitch.me/https%3A%2F%2Fdiscord.com/">`;
+    return response.replace("<head>", "<head>" + SCRIPT_TAG + baseTag);
   }),
   pathRewrite(path, req) {
-    return slice(path).slice(1).join("/")
-  }
+    return slice(path).slice(1).join("/");
+  },
 };
 
 function slice(url) {
-  return url.slice(1).split("/")
+  return url.slice(1).split("/");
 }
 
 function getFirst(url) {
@@ -37,9 +39,9 @@ function getFirst(url) {
 }
 
 function filter(pathname, req) {
-  const url = getFirst(req.url)
+  const url = getFirst(req.url);
   //console.log(url)
-  return url !== "" && isValidURL(url) && url.endsWith("/");
+  return url !== "" && isValidURL(url) && req.url.endsWith("/");
 }
 
 function isValidURL(test) {
@@ -64,13 +66,15 @@ function registerScripts(...names) {
 
 app.use(morgan("dev"));
 
-registerScripts("sw.js", "registerServiceWorker.js")
+registerScripts("sw.js", "registerServiceWorker.js");
 
 app.use(createProxyMiddleware(filter, options));
 
 app.get("/:url", (req, res) => {
-  res.send(`URL "${req.params.url}" is not a valid url. Also, make sure that it ends with a /.`)
-})
+  res.send(
+    `URL "${req.params.url}" is not a valid url. Also, make sure that it ends with a /.`
+  );
+});
 
 // Info GET endpoint
 app.get("/", (req, res, next) => {
