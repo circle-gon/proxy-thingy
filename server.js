@@ -12,7 +12,7 @@ const app = express();
 
 // Configuration
 const PORT = 3000;
-const SCRIPT_TAG = `<script type="module" src="registerServiceWorker.js"></script>`;
+const SCRIPT_TAG = `<script type="module" src="/registerServiceWorker.js"></script>`;
 const BASE_TAG = `<base href="." />`;
 
 const options = {
@@ -24,6 +24,7 @@ const options = {
   onProxyRes: responseInterceptor(async (resBuffer, proxyRes, req, res) => {
     const response = resBuffer.toString("utf-8");
     const baseTag = `<base href="https://adaptive-tricolor-whip.glitch.me/https%3A%2F%2Fdiscord.com/">`;
+    res.setHeader("Content-Security-Policy", "script-src self unsafe-eval https://cdn.jsdelivr.net/;")
     return response.replace("<head>", "<head>" + SCRIPT_TAG);
   }),
   pathRewrite(path, req) {
