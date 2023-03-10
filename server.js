@@ -1,6 +1,9 @@
 import express from "express";
 import morgan from "morgan";
-import { createProxyMiddleware } from "http-proxy-middleware";
+import {
+  createProxyMiddleware,
+  responseInterceptor,
+} from "http-proxy-middleware";
 
 // Create Express Server
 const app = express();
@@ -10,36 +13,43 @@ const PORT = 3000;
 const options = {
   changeOrigin: true,
   router(req) {
-    return req.query.url
+    return req.query.url;
   },
   selfHandleResponse: true,
-  onProxyRes(async (resBuffer, proxyRes, ))
+  onProxyRes: responseInterceptor(async (resBuffer, proxyRes, req, res) => {
+    const response = resBuffer.toString("utf-8");
+    return response.replace("Show Equality", "haha");
+  }),
 };
 
 function filter(pathname, req) {
-  const url = req.query.url
-  return url !== undefined && isValidURL(url)
+  const url = req.query.url;
+  return url !== undefined && isValidURL(url);
 }
 
 function isValidURL(test) {
-  let url
+  let url;
   try {
-    url = new URL(test)
+    url = new URL(test);
   } catch (e) {
-    return false
+    return false;
   }
-  return url.protocol === "http:" || url.protocol === "https:"
+  return url.protocol === "http:" || url.protocol === "https:";
 }
 
 app.use(morgan("dev"));
+
+app.get("/sw.js", (req, res) => {
+  res.
+})
 
 app.use(createProxyMiddleware(filter, options));
 
 // Info GET endpoint
 app.get("/", (req, res, next) => {
-  const url = req.query.url
+  const url = req.query.url;
   if (url !== undefined) {
-    res.send(`URL "${url}" is not a valid URL! Please enter a valid url.`)
+    res.send(`URL "${url}" is not a valid URL! Please enter a valid url.`);
   } else {
     res.send("This is a proxy service.");
   }
