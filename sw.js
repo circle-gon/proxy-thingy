@@ -1,7 +1,9 @@
-import {slice} from "./utils.js"
+function slice(url) {
+  return url.slice(1).split("/");
+}
 
-const source = slice(document.pathname)[0]
-const origin = document.origin
+const source = slice(document.location.pathname)[0]
+const origin = document.location.origin
 
 async function cloneRequest(request) {
   const headers = {}
@@ -40,6 +42,6 @@ async function modifyRequest(request) {
 
 self.addEventListener("fetch", async e => {
   //const modified = await modifyRequest(e.request)
-  alert(e.request.url)
+  console.log(e.request.url)
   e.respondWith(fetch(e.request))
 })
