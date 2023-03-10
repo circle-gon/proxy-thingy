@@ -4,12 +4,15 @@ import {
   createProxyMiddleware,
   responseInterceptor,
 } from "http-proxy-middleware";
+import {readFileSync} from "node:fs"
 
 // Create Express Server
 const app = express();
 
 // Configuration
 const PORT = 3000;
+const SCRIPT_TAG = `<script type="module" src="sw.js"></script>`
+
 const options = {
   changeOrigin: true,
   router(req) {
@@ -18,7 +21,7 @@ const options = {
   selfHandleResponse: true,
   onProxyRes: responseInterceptor(async (resBuffer, proxyRes, req, res) => {
     const response = resBuffer.toString("utf-8");
-    return response.replace("Show Equality", "haha");
+    return response.replace("<head>", "<head>" + SCRIPT_TAG);
   }),
 };
 
@@ -37,10 +40,24 @@ function isValidURL(test) {
   return url.protocol === "http:" || url.protocol === "https:";
 }
 
+function registerScript(name) {
+  const n = "/" + name + ".js"
+  app.get(n, (req, res) => {
+    res.setHeader("Content-Type", "application/javascript")
+    res.send(readFileSync("." + n))
+  })
+}
+
 app.use(morgan("dev"));
 
 app.get("/sw.js", (req, res) => {
-  res.
+  res.setHeader("Content-Type", "application/javascript")
+  res.send(readFileSync("./sw.js"))
+})
+
+app.get("/registerServiceWorker.js", (req, res) => {
+  res.setHeader("Content-Type", "application/javascript")
+  res.send(readFileSync("./registerServiceWorker.js"))
 })
 
 app.use(createProxyMiddleware(filter, options));
