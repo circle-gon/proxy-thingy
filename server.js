@@ -23,19 +23,23 @@ const options = {
     const response = resBuffer.toString("utf-8");
     return response.replace("<head>", "<head>" + SCRIPT_TAG);
   }),
-  pathRewrite: {
-    "^/*/": ""
+  pathRewrite(path, req) {
+    return slice(path).slice(1).join("/")
   }
 };
 
+function slice(url) {
+  return url.slice(1).split("/")
+}
+
 function getFirst(url) {
-  return decodeURIComponent(url.slice(1).split("/")[0]);
+  return decodeURIComponent(slice(url)[0]);
 }
 
 function filter(pathname, req) {
   const url = getFirst(req.url)
-  console.log(url)
-  return url !== "" && isValidURL(url);
+  //console.log(url)
+  return url !== "" && isValidURL(url) && url.endsWith("/");
 }
 
 function isValidURL(test) {
@@ -65,7 +69,7 @@ registerScripts("sw.js", "registerServiceWorker.js")
 app.use(createProxyMiddleware(filter, options));
 
 app.get("/:url", (req, res) => {
-  res.send(`URL "${req.params.url}" is not a valid url.`)
+  res.send(`URL "${req.params.url}" is not a valid url. Also, make sure that it ends with a /.`)
 })
 
 // Info GET endpoint
