@@ -4,14 +4,14 @@ import {
   createProxyMiddleware,
   responseInterceptor,
 } from "http-proxy-middleware";
-import {readFileSync} from "node:fs"
+import { readFileSync } from "node:fs";
 
 // Create Express Server
 const app = express();
 
 // Configuration
 const PORT = 3000;
-const SCRIPT_TAG = `<script type="module" src="sw.js"></script>`
+const SCRIPT_TAG = `<script type="module" src="registerServiceWorker.js"></script>`;
 
 const options = {
   changeOrigin: true,
@@ -40,25 +40,19 @@ function isValidURL(test) {
   return url.protocol === "http:" || url.protocol === "https:";
 }
 
-function registerScript(name) {
-  const n = "/" + name + ".js"
-  app.get(n, (req, res) => {
-    res.setHeader("Content-Type", "application/javascript")
-    res.send(readFileSync("." + n))
-  })
+function registerScripts(...names) {
+  for (const name of names) {
+    const n = "/" + name;
+    app.get(n, (req, res) => {
+      res.setHeader("Content-Type", "text/javascript");
+      res.send(readFileSync("." + n));
+    });
+  }
 }
 
 app.use(morgan("dev"));
 
-app.get("/sw.js", (req, res) => {
-  res.setHeader("Content-Type", "application/javascript")
-  res.send(readFileSync("./sw.js"))
-})
-
-app.get("/registerServiceWorker.js", (req, res) => {
-  res.setHeader("Content-Type", "application/javascript")
-  res.send(readFileSync("./registerServiceWorker.js"))
-})
+registerScripts("sw.js", "registerServiceWorker.js")
 
 app.use(createProxyMiddleware(filter, options));
 
