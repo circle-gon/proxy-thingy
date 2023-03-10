@@ -16,7 +16,7 @@ const SCRIPT_TAG = `<script type="module" src="registerServiceWorker.js"></scrip
 const options = {
   changeOrigin: true,
   router(req) {
-    return req.params.url;
+    return decodeURIComponent(getFirst(req.url))
   },
   selfHandleResponse: true,
   onProxyRes: responseInterceptor(async (resBuffer, proxyRes, req, res) => {
@@ -25,16 +25,20 @@ const options = {
   }),
 };
 
+function getFirst(url) {
+  return url.slice(1).split("/")[0];
+}
+
 function filter(pathname, req) {
-  const url = req.url.slice(1);
-  console.log(req)
-  return url !== undefined && isValidURL(url);
+  const url = getFirst(req.url)
+  console.log(url)
+  return url !== "" && isValidURL(url);
 }
 
 function isValidURL(test) {
   let url;
   try {
-    url = new URL(test);
+    url = new URL(decodeURIComponent(test));
   } catch (e) {
     return false;
   }
