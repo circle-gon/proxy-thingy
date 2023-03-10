@@ -1,29 +1,35 @@
 import express from "express";
 import morgan from "morgan";
-import {createProxyMiddleware} from "http-proxy-middleware";
+import { createProxyMiddleware } from "http-proxy-middleware";
 
 // Create Express Server
 const app = express();
-const ENDPOINT = "/api"
 
 // Configuration
 const PORT = 3000;
 const options = {
-  target: "https://trimps.github.io/",
   changeOrigin: true,
-  pathRewrite: {
-    ["^" + ENDPOINT]: ""
-  } 
+  router(req) {
+    const def = "https://jsonplaceholder.typicode.com/";
+    const query = req.query.url;
+    if (!query || !query.startsWith("http://") || !query.startsWith("https://")) return def;
+    return query;
+  },
+};
+
+function filter(pathname, req) {
+  console.log(req.query.url)
+  return req.query.url !== undefined
 }
 
 app.use(morgan("dev"));
+
+app.use(createProxyMiddleware(filter, options));
 
 // Info GET endpoint
 app.get("/", (req, res, next) => {
   res.send("This is a proxy service.");
 });
-
-app.use(ENDPOINT, createProxyMiddleware(options))
 
 // Start the Proxy
 app.listen(PORT, () => {
