@@ -10,16 +10,25 @@ const PORT = 3000;
 const options = {
   changeOrigin: true,
   router(req) {
-    const def = "https://jsonplaceholder.typicode.com/";
-    const query = req.query.url;
-    if (!query || !query.startsWith("http://") || !query.startsWith("https://")) return def;
-    return query;
+    return req.query.url
   },
+  selfHandleResponse: true,
+  onProxyRes(async (resBuffer, proxyRes, ))
 };
 
 function filter(pathname, req) {
-  console.log(req.query.url)
-  return req.query.url !== undefined
+  const url = req.query.url
+  return url !== undefined && isValidURL(url)
+}
+
+function isValidURL(test) {
+  let url
+  try {
+    url = new URL(test)
+  } catch (e) {
+    return false
+  }
+  return url.protocol === "http:" || url.protocol === "https:"
 }
 
 app.use(morgan("dev"));
@@ -28,7 +37,12 @@ app.use(createProxyMiddleware(filter, options));
 
 // Info GET endpoint
 app.get("/", (req, res, next) => {
-  res.send("This is a proxy service.");
+  const url = req.query.url
+  if (url !== undefined) {
+    res.send(`URL "${url}" is not a valid URL! Please enter a valid url.`)
+  } else {
+    res.send("This is a proxy service.");
+  }
 });
 
 // Start the Proxy
