@@ -1,4 +1,6 @@
-const source = new URL(document.location).searchParams.get("url")
+import {slice} from "./utils.js"
+
+const source = slice(document.location)
 
 self.addEventListener("fetch", async e => {
   const request = e.request

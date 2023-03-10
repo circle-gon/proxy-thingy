@@ -5,6 +5,7 @@ import {
   responseInterceptor,
 } from "http-proxy-middleware";
 import { readFileSync } from "node:fs";
+import {slice} from "./utils.js"
 
 // Create Express Server
 const app = express();
@@ -23,20 +24,12 @@ const options = {
   onProxyRes: responseInterceptor(async (resBuffer, proxyRes, req, res) => {
     const response = resBuffer.toString("utf-8");
     const baseTag = `<base href="https://adaptive-tricolor-whip.glitch.me/https%3A%2F%2Fdiscord.com/">`;
-    return response.replace("<head>", "<head>" + SCRIPT_TAG + baseTag);
+    return response.replace("<head>", "<head>" + SCRIPT_TAG);
   }),
   pathRewrite(path, req) {
     return slice(path).slice(1).join("/");
   },
 };
-
-function slice(url) {
-  return url.slice(1).split("/");
-}
-
-function getFirst(url) {
-  return decodeURIComponent(slice(url)[0]);
-}
 
 function filter(pathname, req) {
   const url = getFirst(req.url);
@@ -64,9 +57,13 @@ function registerScripts(...names) {
   }
 }
 
+function getFirst(url) {
+  return decodeURIComponent(slice(url)[0]);
+}
+
 app.use(morgan("dev"));
 
-registerScripts("sw.js", "registerServiceWorker.js");
+registerScripts("sw.js", "registerServiceWorker.js", "utils.js");
 
 app.use(createProxyMiddleware(filter, options));
 
