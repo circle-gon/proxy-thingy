@@ -36,9 +36,7 @@ const options = {
 };
 
 function filter(pathname, req) {
-  const url = getFirst(req.url);
-  //console.log(url)
-  return url !== "" && isValidURL(url);
+  return isValidURL(getFirst(req.url));
 }
 
 function getFirst(url) {
