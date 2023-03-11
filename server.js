@@ -12,8 +12,8 @@ const app = express();
 
 // Configuration
 const PORT = 3000;
-const SCRIPT_TAG = `<script type="module" src="/registerServiceWorker.js"></script>`;
-const CONTENT_SECURITY_POLICY_BASE = /*"script-src https://adaptive-tricolor-whip.glitch.me/"*/ ""
+const SCRIPT_TAG = /*`<script type="module" src="/registerServiceWorker.js"></script>`;*/ ""
+const CONTENT_SECURITY_POLICY_BASE = "script-src https://adaptive-tricolor-whip.glitch.me/"
 const IS_DEV = true
 
 const options = {
