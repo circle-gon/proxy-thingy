@@ -10,14 +10,15 @@
     ><br />
     <span id="error" style="color: red"></span>
     <script type="module">
-      import {isValidURL} from "./utils.js"
+      import {isValidURL} from "/utils.js"
       const input = document.getElementById("go")
       const error = document.getElementById("error")
       const button = document.getElementById("button")
       
       button.onclick = () => {
         if (isValidURL(input.value)) {
-          window.location.href = document.location.origin + "/" + encodeURIComponent(input.value)
+          const url = new URL(input.value)
+          window.location.href = document.location.origin + "/" + encodeURIComponent(url.origin) + input.value.replace(url.origin, "")
         } else {
           error.innerHTML = "Oops, that is not a valid url. Try again!"
         }

@@ -13,7 +13,7 @@ const app = express();
 // Configuration
 const PORT = 3000;
 const SCRIPT_TAG = `<script type="module" src="/registerServiceWorker.js"></script>`;
-const CONTENT_SECURITY_POLICY_BASE = "script-src https://adaptive-tricolor-whip.glitch.me/"
+const CONTENT_SECURITY_POLICY_BASE = /*"script-src https://adaptive-tricolor-whip.glitch.me/"*/ ""
 const IS_DEV = true
 
 const options = {
@@ -24,7 +24,6 @@ const options = {
   selfHandleResponse: true,
   onProxyRes: responseInterceptor(async (resBuffer, proxyRes, req, res) => {
     const response = resBuffer.toString("utf-8");
-    const baseTag = `<base href="https://adaptive-tricolor-whip.glitch.me/https%3A%2F%2Fdiscord.com/">`;
     let csp = CONTENT_SECURITY_POLICY_BASE
     if (IS_DEV) csp += " 'unsafe-eval' https://cdn.jsdelivr.net/"
     res.setHeader("Content-Security-Policy", csp)
