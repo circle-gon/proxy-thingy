@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
   </head>
   <body>
-    This is a proxy service. Go to: <input type="text" id="go" /><button onclick="transport()" id="button">
+    This is a proxy service. Go to: <input type="text" id="go" /><button id="button">
       Go!</button
     ><br />
     <span id="error" style="color: red"></span>
@@ -13,11 +13,15 @@
       import {isValidURL, slice} from "./utils.js"
       const input = document.getElementById("go")
       const error = document.getElementById("error")
+      const button = document.getElementById("button")
       
-      function transport() {
+      button.onclick = () => {
         if (isValidURL(input.value)) {
           const url = new URL(input.value)
-          const parts = slice(url.pathname)
+          const parts = slice(url.pathname).join("/")
+          window.location.href = document.location.origin + "/" + encodeURIComponent(url.origin) + parts
+        } else {
+          error.innerHTML = "Oops, that is not a valid url. Try again!"
         }
       }
     </script>
