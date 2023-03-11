@@ -17,4 +17,4 @@ const load = async () => {
     }
   }
 }
-load()
+await load()

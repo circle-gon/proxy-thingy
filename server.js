@@ -39,7 +39,7 @@ const options = {
 function filter(pathname, req) {
   const url = getFirst(req.url);
   //console.log(url)
-  return url !== "" && isValidURL(url) && req.url.endsWith("/");
+  return url !== "" && isValidURL(url);
 }
 
 function isValidURL(test) {
@@ -74,7 +74,7 @@ app.use(createProxyMiddleware(filter, options));
 
 app.get("/:url", (req, res) => {
   res.send(
-    `URL "${req.params.url}" is not a valid url. Also, make sure that it ends with a /.`
+    `URL "${req.params.url}" is not a valid url.`
   );
 });
 
