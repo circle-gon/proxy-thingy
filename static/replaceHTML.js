@@ -9,17 +9,21 @@ function addProtocol(url) {
 }
 
 function ignoreURL(url) {
-  if (url === "/replaceHTML.js" || url === "//cdn.js")
+  if (url === "/replaceHTML.js" || url === "//cdn.jsdelivr.net/npm/eruda")
+    return true;
+  return false;
 }
 
 function getCorrectURI(uri) {
-  if (uri.startsWith("//")) {
-    const fix = addProtocol(uri.replace("//", ""))
+  if (ignoreURL(uri)) {
+    return uri;
+  } else if (uri.startsWith("//")) {
+    const fix = addProtocol(uri.replace("//", ""));
     // url to another page
-    
+
     // this url is to this page, not another page
-    if (fix.startsWith(origin)) return uri
-    
+    if (fix.startsWith(origin)) return uri;
+
     return proxyURL(addProtocol(fix));
   } else if (uri.startsWith("/")) {
     // url to root
@@ -28,9 +32,9 @@ function getCorrectURI(uri) {
     );
   } else if (hasProtocol(uri)) {
     // url to another page
-    
+
     // this url is to this page
-    if (uri.startsWith(origin)) return uri
+    if (uri.startsWith(origin)) return uri;
     return proxyURL(uri);
   } else {
     // other url types or relative url
@@ -41,7 +45,8 @@ function getCorrectURI(uri) {
 function fixURL(node, name) {
   const href = node.getAttribute(name);
   if (href !== null) {
-    console.log(href, getCorrectURI(href))
+    const correct = getCorrect
+    console.log(href, getCorrectURI(href));
     node.setAttribute(name, getCorrectURI(href));
   }
 }
@@ -74,7 +79,7 @@ function onChange(record) {
         }
         break;
       case "attributes":
-        fixURLForNode(mutation.target)
+        fixURLForNode(mutation.target);
     }
   }
 }
@@ -87,4 +92,4 @@ const observer = new MutationObserver(onChange);
   attributeFilter: ["src", "href"],
 });*/
 
-fixURLNodes(document.documentElement)
+fixURLNodes(document.documentElement);
