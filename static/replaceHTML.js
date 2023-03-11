@@ -45,9 +45,8 @@ function getCorrectURI(uri) {
 function fixURL(node, name) {
   const href = node.getAttribute(name);
   if (href !== null) {
-    const correct = getCorrect
-    console.log(href, getCorrectURI(href));
-    node.setAttribute(name, getCorrectURI(href));
+    const correct = getCorrectURI(href);
+    if (correct !== href) node.setAttribute(name, getCorrectURI(href));
   }
 }
 
@@ -85,11 +84,14 @@ function onChange(record) {
 }
 
 const observer = new MutationObserver(onChange);
-/*observer.observe(document.documentElement, {
-  childList: true,
-  subtree: true,
-  attributes: true,
-  attributeFilter: ["src", "href"],
-});*/
 
-fixURLNodes(document.documentElement);
+window.addEventListener("DOMContentLoaded", () => {
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["src", "href"],
+  });
+
+  fixURLNodes(document.documentElement);
+});
