@@ -57,7 +57,7 @@ function registerScripts(...names) {
     const n = "/" + name;
     app.get(n, (req, res) => {
       res.setHeader("Content-Type", "text/javascript");
-      res.send(readFileSync("." + n));
+      res.send(readFileSync("./static" + n));
     });
   }
 }
@@ -68,7 +68,7 @@ function getFirst(url) {
 
 app.use(morgan("dev"));
 
-registerScripts("sw.js", "registerServiceWorker.js", "utils.js");
+registerScripts("sw.js", "registerServiceWorker.js");
 
 app.use(createProxyMiddleware(filter, options));
 
