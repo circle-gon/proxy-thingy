@@ -5,7 +5,7 @@ import {
   responseInterceptor,
 } from "http-proxy-middleware";
 import { readFileSync } from "node:fs";
-import {slice} from "./utils.js"
+import {isValidURL, slice} from "./shared/utils.js"
 
 // Create Express Server
 const app = express();
@@ -13,7 +13,6 @@ const app = express();
 // Configuration
 const PORT = 3000;
 const SCRIPT_TAG = `<script type="module" src="/registerServiceWorker.js"></script>`;
-const BASE_TAG = `<base href="." />`;
 const CONTENT_SECURITY_POLICY_BASE = "script-src https://adaptive-tricolor-whip.glitch.me/"
 const IS_DEV = true
 
@@ -42,45 +41,19 @@ function filter(pathname, req) {
   return url !== "" && isValidURL(url);
 }
 
-function isValidURL(test) {
-  let url;
-  try {
-    url = new URL(test);
-  } catch (e) {
-    return false;
-  }
-  return url.protocol === "http:" || url.protocol === "https:";
-}
-
-function registerScripts(...names) {
-  for (const name of names) {
-    const n = "/" + name;
-    app.get(n, (req, res) => {
-      res.setHeader("Content-Type", "text/javascript");
-      res.send(readFileSync("./static" + n));
-    });
-  }
-}
-
 function getFirst(url) {
   return decodeURIComponent(slice(url)[0]);
 }
 
 app.use(morgan("dev"));
-
-registerScripts("sw.js", "registerServiceWorker.js");
-
+app.use(express.static("shared"))
+app.use(express.static("static"))
 app.use(createProxyMiddleware(filter, options));
 
 app.get("/:url", (req, res) => {
   res.send(
     `URL "${req.params.url}" is not a valid url.`
   );
-});
-
-// Info GET endpoint
-app.get("/", (req, res, next) => {
-  res.send("This is a proxy service.");
 });
 
 // Start the Proxy
