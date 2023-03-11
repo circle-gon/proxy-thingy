@@ -3,16 +3,23 @@ import { isValidURL, proxyURL, slice, hasProtocol } from "./utils.js";
 const origin = document.location.origin + "/";
 
 function addProtocol(url) {
-  if (!url.startsWith("http://") || !url.startsWith("https://"))
-    return "https://" + url;
+  if (!url.startsWith("https://"))
+    return "https://" + url.replace("http://", "");
   return url;
+}
+
+function ignoreURL(url) {
+  if (url === "/replaceHTML.js" || url === "//cdn.js")
 }
 
 function getCorrectURI(uri) {
   if (uri.startsWith("//")) {
-    const fix = uri.replace("//", "")
+    const fix = addProtocol(uri.replace("//", ""))
     // url to another page
+    
+    // this url is to this page, not another page
     if (fix.startsWith(origin)) return uri
+    
     return proxyURL(addProtocol(fix));
   } else if (uri.startsWith("/")) {
     // url to root
@@ -21,6 +28,9 @@ function getCorrectURI(uri) {
     );
   } else if (hasProtocol(uri)) {
     // url to another page
+    
+    // this url is to this page
+    if (uri.startsWith(origin)) return uri
     return proxyURL(uri);
   } else {
     // other url types or relative url
@@ -31,8 +41,7 @@ function getCorrectURI(uri) {
 function fixURL(node, name) {
   const href = node.getAttribute(name);
   if (href !== null) {
-    alert(href)
-    alert(getCorrectURI(href))
+    console.log(href, getCorrectURI(href))
     node.setAttribute(name, getCorrectURI(href));
   }
 }
@@ -71,11 +80,11 @@ function onChange(record) {
 }
 
 const observer = new MutationObserver(onChange);
-observer.observe(document.documentElement, {
+/*observer.observe(document.documentElement, {
   childList: true,
   subtree: true,
   attributes: true,
   attributeFilter: ["src", "href"],
-});
+});*/
 
 fixURLNodes(document.documentElement)
