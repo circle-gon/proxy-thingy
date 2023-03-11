@@ -57,7 +57,9 @@ function fixURLForNode(node) {
       fixURL(node, "href");
       break;
     case "script":
-      fixURL(node, "src");
+      const n = node.cloneNode()
+      fixURL(n, "src");
+      node.replaceWith(n)
       break;
   }
 }
@@ -73,12 +75,15 @@ function onChange(record) {
   for (const mutation of record) {
     switch (mutation.type) {
       case "childList":
+        console.log(mutation.addedNodes)
         for (const addedNode of mutation.addedNodes) {
           fixURLNodes(addedNode);
         }
         break;
       case "attributes":
+        console.log(mutation.target)
         fixURLForNode(mutation.target);
+        break;
     }
   }
 }
