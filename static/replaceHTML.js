@@ -58,8 +58,9 @@ function fixURLForNode(node) {
       break;
     case "script":
       const n = node.cloneNode()
+      const src = n.getAttribute("src")
       fixURL(n, "src");
-      node.replaceWith(n)
+      //if (n.src !== src) node.replaceWith(n)
       break;
   }
 }
