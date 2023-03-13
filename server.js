@@ -4,17 +4,17 @@ import morgan from "morgan";
   createProxyMiddleware,
   responseInterceptor,
 } from "http-proxy-middleware";
-import { readFileSync } from "node:fs";
 import {isValidURL, slice} from "./shared/utils.js"*/
 import {fileURLToPath} from "node:url"
 import {Server} from "socket.io"
 import {createServer} from "node:http"
 
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
+
 // Create Express Server
 const app = express();
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
-const http = createServer(app)
-const server = new Server(http)
+const server = createServer(app)
+const io = new Server(server)
 
 // Configuration
 const PORT = 3000;
@@ -50,7 +50,6 @@ function getFirst(url) {
 
 app.use(morgan("dev"));
 //app.use(express.static("shared"))
-//app.use(express.static("static"))
 //app.use(createProxyMiddleware(filter, options));
 
 /*app.get("/:url", (req, res) => {
@@ -59,13 +58,15 @@ app.use(morgan("dev"));
   );
 });*/
 
-server.on("connection", (socket) => {
+io.on("connection", (socket) => {
   console.log("someone connected")
 })
 
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/static/index_io.html")
+  res.sendFile(__dirname + "/index.html")
 })
+
+app.use(express.static("io-static"))
 
 // Start the Proxy
 server.listen(PORT, () => {
