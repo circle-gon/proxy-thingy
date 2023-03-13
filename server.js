@@ -1,18 +1,24 @@
 import express from "express";
 import morgan from "morgan";
-import {
+/*import {
   createProxyMiddleware,
   responseInterceptor,
 } from "http-proxy-middleware";
 import { readFileSync } from "node:fs";
-import {isValidURL, slice} from "./shared/utils.js"
+import {isValidURL, slice} from "./shared/utils.js"*/
+import {fileURLToPath} from "node:url"
+import {Server} from "socket.io"
+import {createServer} from "node:http"
 
 // Create Express Server
 const app = express();
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const http = createServer(app)
+const server = new Server(http)
 
 // Configuration
 const PORT = 3000;
-const SCRIPT_TAG = `<script type="module" src="/replaceHTML.js"></script>`;
+/*const SCRIPT_TAG = `<script type="module" src="/replaceHTML.js"></script>`;
 const CONTENT_SECURITY_POLICY_BASE = "script-src https://adaptive-tricolor-whip.glitch.me/"
 const IS_DEV = true
 
@@ -40,20 +46,28 @@ function filter(pathname, req) {
 
 function getFirst(url) {
   return decodeURIComponent(slice(url)[0]);
-}
+}*/
 
 app.use(morgan("dev"));
-app.use(express.static("shared"))
-app.use(express.static("static"))
-app.use(createProxyMiddleware(filter, options));
+//app.use(express.static("shared"))
+//app.use(express.static("static"))
+//app.use(createProxyMiddleware(filter, options));
 
-app.get("/:url", (req, res) => {
+/*app.get("/:url", (req, res) => {
   res.send(
     `URL "${req.params.url}" is not a valid url.`
   );
-});
+});*/
+
+server.on("connection", (socket) => {
+  console.log("someone connected")
+})
+
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/static/index_io.html")
+})
 
 // Start the Proxy
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Starting Proxy at port ${PORT}`);
 });
