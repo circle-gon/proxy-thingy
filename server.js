@@ -63,7 +63,7 @@ io.on("connection", (socket) => {
 })
 
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html")
+  res.sendFile(__dirname + "/io-static/index.html")
 })
 
 app.use(express.static("io-static"))
