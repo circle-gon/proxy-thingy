@@ -66,6 +66,10 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/io-static/index.html")
 })
 
+app.get("/pong", (req, res) => {
+  res.send("Ping!")
+})
+
 app.use(express.static("io-static"))
 
 // Start the Proxy
