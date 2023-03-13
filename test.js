@@ -1,17 +1,9 @@
 import {JSDOM, ResourceLoader} from "jsdom"
 
-const thing = new JSDOM(`
-<!DOCTYPE html>
-<html>
-  <head>
-  </head>
-  <body>
-    <script src="https://adaptive-tricolor-whip.glitch.me/brr.js"></script>
-  </body>
-</html>`, {
-  url: "https://discord.com",
-  resources: "usable",
-  runScripts: "dangerously"
+const result = await JSDOM.fromURL("https://discord.com", {
+  runScripts: "dangerously",
+  resources: "usable"
 })
-
-console.log(thing.window.document.documentElement.outerHTML)
+console.log("Waiting...")
+await new Promise(r=>setTimeout(r, 1000))
+console.log(result.serialize())
