@@ -1,10 +1,10 @@
 import express from "express";
 import morgan from "morgan";
-/*import {
+import {
   createProxyMiddleware,
   responseInterceptor,
 } from "http-proxy-middleware";
-import {isValidURL, slice} from "./shared/utils.js"*/
+import {isValidURL, slice} from "./shared/utils.js"
 import {fileURLToPath} from "node:url"
 import {Server} from "socket.io"
 import {createServer} from "node:http"
@@ -13,8 +13,8 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
 // Create Express Server
 const app = express();
-const server = createServer(app)
-const io = new Server(server)
+//const server = createServer(app)
+// const io = new Server(server)
 
 // Configuration
 const PORT = 3000;
@@ -50,7 +50,10 @@ function getFirst(url) {
 
 app.use(morgan("dev"));
 //app.use(express.static("shared"))
-//app.use(createProxyMiddleware(filter, options));
+app.use(createProxyMiddleware({
+  target: "https://trimps.github.io/",
+  changeOrigin: true
+}));
 
 /*app.get("/:url", (req, res) => {
   res.send(
@@ -58,11 +61,11 @@ app.use(morgan("dev"));
   );
 });*/
 
-io.on("connection", (socket) => {
+/*io.on("connection", (socket) => {
   console.log("someone connected")
-})
+})*/
 
-app.get("/", (req, res) => {
+/*app.get("/", (req, res) => {
   res.sendFile(__dirname + "/io-static/index.html")
 })
 
@@ -70,9 +73,9 @@ app.get("/pong", (req, res) => {
   res.send("Ping!")
 })
 
-app.use(express.static("io-static"))
+app.use(express.static("io-static"))*/
 
 // Start the Proxy
-server.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Starting Proxy at port ${PORT}`);
 });
