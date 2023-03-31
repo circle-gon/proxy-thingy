@@ -39,7 +39,7 @@ const options = {
   pathRewrite(path, req) {
     return slice(path).slice(1).join("/");
   },
-  target: "https://crazygames.com/"
+  target: "https://trimps.github.io/"
 };
 
 /*function filter(pathname, req) {
