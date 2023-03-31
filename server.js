@@ -27,14 +27,14 @@ const options = {
   /*router(req) {
     return getFirst(req.url);
   },*/
-  /*selfHandleResponse: true,
-  onProxyRes: responseInterceptor(async (resBuffer, proxyRes, req, res) => {
-    const response = resBuffer.toString("utf-8");
+  selfHandleResponse: true,
+  onProxyReq: 
+  onProxyRes: responseInterceptor(async(resBuffer, proxyRes, req, res) => {
     //let csp = CONTENT_SECURITY_POLICY_BASE
     //if (IS_DEV) csp += " 'unsafe-eval' https://cdn.jsdelivr.net/"
     //res.setHeader("Content-Security-Policy", csp)
-    return response.replace("<head>", "<head>" + `
-    <script>window.onbeforeunload = function(){return ""}</script>`);
+    res.statusCode = 200
+    return resBuffer.toString("utf8")
   }),
   /*pathRewrite(path, req) {
     return slice(path).slice(1).join("/");
