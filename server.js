@@ -20,27 +20,29 @@ const app = express();
 const PORT = 3000;
 /*const SCRIPT_TAG = `<script type="module" src="/replaceHTML.js"></script>`;
 const CONTENT_SECURITY_POLICY_BASE = "script-src https://adaptive-tricolor-whip.glitch.me/"
-const IS_DEV = true
+const IS_DEV = true*/
 
 const options = {
   changeOrigin: true,
-  router(req) {
+  /*router(req) {
     return getFirst(req.url);
-  },
+  },*/
   selfHandleResponse: true,
   onProxyRes: responseInterceptor(async (resBuffer, proxyRes, req, res) => {
     const response = resBuffer.toString("utf-8");
-    let csp = CONTENT_SECURITY_POLICY_BASE
-    if (IS_DEV) csp += " 'unsafe-eval' https://cdn.jsdelivr.net/"
-    res.setHeader("Content-Security-Policy", csp)
-    return response.replace("<head>", "<head>" + SCRIPT_TAG);
+    //let csp = CONTENT_SECURITY_POLICY_BASE
+    //if (IS_DEV) csp += " 'unsafe-eval' https://cdn.jsdelivr.net/"
+    //res.setHeader("Content-Security-Policy", csp)
+    return response.replace("<head>", "<head>" + `
+    <script>window.onbeforeunload = function(){return ""}</script>`);
   }),
   pathRewrite(path, req) {
     return slice(path).slice(1).join("/");
   },
+  target: "https://crazygames.com/"
 };
 
-function filter(pathname, req) {
+/*function filter(pathname, req) {
   return isValidURL(getFirst(req.url));
 }
 
@@ -50,10 +52,7 @@ function getFirst(url) {
 
 app.use(morgan("dev"));
 //app.use(express.static("shared"))
-app.use(createProxyMiddleware({
-  target: "https://trimps.github.io/",
-  changeOrigin: true
-}));
+app.use(createProxyMiddleware(options));
 
 /*app.get("/:url", (req, res) => {
   res.send(
