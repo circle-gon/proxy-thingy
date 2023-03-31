@@ -27,7 +27,7 @@ const options = {
   /*router(req) {
     return getFirst(req.url);
   },*/
-  selfHandleResponse: true,
+  /*selfHandleResponse: true,
   onProxyRes: responseInterceptor(async (resBuffer, proxyRes, req, res) => {
     const response = resBuffer.toString("utf-8");
     //let csp = CONTENT_SECURITY_POLICY_BASE
@@ -36,10 +36,10 @@ const options = {
     return response.replace("<head>", "<head>" + `
     <script>window.onbeforeunload = function(){return ""}</script>`);
   }),
-  pathRewrite(path, req) {
+  /*pathRewrite(path, req) {
     return slice(path).slice(1).join("/");
-  },
-  target: "https://trimps.github.io/"
+  },*/
+  target: "https://crazygames.com/"
 };
 
 /*function filter(pathname, req) {
