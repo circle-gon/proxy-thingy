@@ -43,7 +43,7 @@ const options = {
       }
       return text;
     }*/
-    console.log(req.host, req.path);
+    console.log(req.host, req.path, req);
     return resBuffer;
   }),
   pathRewrite(path, req) {
