@@ -43,7 +43,7 @@ const options = {
       }
       return text;
     }*/
-    console.log("GET1: " + proxyRes.url);
+    console.log("GET1: " + req.url);
     return resBuffer;
   }),
   pathRewrite(path, req) {
