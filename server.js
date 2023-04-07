@@ -31,17 +31,19 @@ const options = {
   },
   selfHandleResponse: true,
   onProxyRes: responseInterceptor(async (resBuffer, proxyRes, req, res) => {
-    if (res.getHeader("Content-Type") === "text/html") {
+    /*if (res.getHeader("Content-Type") === "text/html") {
       const text = resBuffer.toString("utf8");
+      
       const dom = new JSDOM(text);
       const document = dom.window.document
       for (const ele of document.getElementsByTagName("script")) {
         if (ele.src) {
-          ele.src = getCorrectURL(ele.src, )
+          ele.src = getCorrectURL(ele.src, req.host, req.path)
         }
       }
       return text;
-    }
+    }*/
+    console.log(req.host, req.path);
     return resBuffer;
   }),
   pathRewrite(path, req) {

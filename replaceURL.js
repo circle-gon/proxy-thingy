@@ -10,7 +10,7 @@ function ignoreURL(url) {
   return false;
 }
 
-export function getCorrectURI(uri, origin, pathname) {
+export function getCorrectURL(uri, origin, pathname) {
   if (ignoreURL(uri)) {
     return uri;
   } else if (uri.startsWith("//")) {
