@@ -4,12 +4,13 @@ import {
   createProxyMiddleware,
   responseInterceptor,
 } from "http-proxy-middleware";
-import {isValidURL, slice} from "./shared/utils.js"
-import {fileURLToPath} from "node:url"
+import { isValidURL, slice } from "./shared/utils.js";
+import { fileURLToPath } from "node:url";
+import { JSDOM } from "jsdom";
 //import {Server} from "socket.io"
 //import {createServer} from "node:http"
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 // Create Express Server
 const app = express();
@@ -28,14 +29,17 @@ const options = {
     return getFirst(req.url);
   },
   selfHandleResponse: true,
-  onProxyRes: responseInterceptor(async(resBuffer, proxyRes, req, res) => {
-    const text = resBuffer.toString("utf8")
-    res.statusCode = 200
-    return text
+  onProxyRes: responseInterceptor(async (resBuffer, proxyRes, req, res) => {
+    if (res.getHeader("Content-Type") === "text/html") {
+      const text = resBuffer.toString("utf8");
+      const dom = new JSDOM(text);
+      return text;
+    }
+    return resBuffer;
   }),
   pathRewrite(path, req) {
     return slice(path).slice(1).join("/");
-  }
+  },
 };
 
 function filter(pathname, req) {
@@ -47,14 +51,12 @@ function getFirst(url) {
 }
 
 app.use(morgan("dev"));
-app.use(express.static("shared"))
-app.use(express.static("static"))
+app.use(express.static("shared"));
+app.use(express.static("static"));
 app.use(createProxyMiddleware(filter, options));
 
 app.get("/:url", (req, res) => {
-  res.send(
-    `URL "${req.params.url}" is not a valid url.`
-  );
+  res.send(`URL "${req.params.url}" is not a valid url.`);
 });
 
 /*io.on("connection", (socket) => {
