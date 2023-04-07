@@ -43,7 +43,8 @@ const options = {
       }
       return text;
     }*/
-    console.log("GET1: " + req.url);
+    console.log("PROXIED")
+    console.log(`target: ${proxyRes.req.protocol}//${proxyRes.req.host}${proxyRes.req.path}`);
     return resBuffer;
   }),
   pathRewrite(path, req) {

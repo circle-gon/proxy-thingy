@@ -16,10 +16,10 @@ export function slice(url) {
   return url.slice(1).split("/");
 }
 
-export function proxyURL(url) {
+export function proxyURL(url, origin) {
   const uri = new URL(url);
   return (
-    document.location.origin +
+    origin +
     "/" +
     encodeURIComponent(uri.origin) +
     url.replace(uri.origin, "")
