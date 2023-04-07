@@ -6,8 +6,8 @@ import {
 } from "http-proxy-middleware";
 import {isValidURL, slice} from "./shared/utils.js"
 import {fileURLToPath} from "node:url"
-import {Server} from "socket.io"
-import {createServer} from "node:http"
+//import {Server} from "socket.io"
+//import {createServer} from "node:http"
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -24,48 +24,43 @@ const IS_DEV = true*/
 
 const options = {
   changeOrigin: true,
-  /*router(req) {
+  router(req) {
     return getFirst(req.url);
-  },*/
-  selfHandleResponse: true,
-  onProxyReq: 
+  },
+  /*selfHandleResponse: true,
   onProxyRes: responseInterceptor(async(resBuffer, proxyRes, req, res) => {
     //let csp = CONTENT_SECURITY_POLICY_BASE
     //if (IS_DEV) csp += " 'unsafe-eval' https://cdn.jsdelivr.net/"
     //res.setHeader("Content-Security-Policy", csp)
     res.statusCode = 200
     return resBuffer.toString("utf8")
-  }),
-  /*pathRewrite(path, req) {
+  }),*/
+  pathRewrite(path, req) {
     return slice(path).slice(1).join("/");
-  },*/
-  target: "https://crazygames.com/"
+  }
 };
 
-/*function filter(pathname, req) {
+function filter(pathname, req) {
   return isValidURL(getFirst(req.url));
 }
 
 function getFirst(url) {
   return decodeURIComponent(slice(url)[0]);
-}*/
+}
 
 app.use(morgan("dev"));
-//app.use(express.static("shared"))
-app.use(createProxyMiddleware(options));
+app.use(express.static("shared"))
+app.use(express.static("static"))
+app.use(createProxyMiddleware(filter, options));
 
-/*app.get("/:url", (req, res) => {
+app.get("/:url", (req, res) => {
   res.send(
     `URL "${req.params.url}" is not a valid url.`
   );
-});*/
+});
 
 /*io.on("connection", (socket) => {
   console.log("someone connected")
-})*/
-
-/*app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/io-static/index.html")
 })
 
 app.get("/pong", (req, res) => {
