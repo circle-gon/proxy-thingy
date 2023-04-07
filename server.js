@@ -27,14 +27,12 @@ const options = {
   router(req) {
     return getFirst(req.url);
   },
-  /*selfHandleResponse: true,
+  selfHandleResponse: true,
   onProxyRes: responseInterceptor(async(resBuffer, proxyRes, req, res) => {
-    //let csp = CONTENT_SECURITY_POLICY_BASE
-    //if (IS_DEV) csp += " 'unsafe-eval' https://cdn.jsdelivr.net/"
-    //res.setHeader("Content-Security-Policy", csp)
+    const text = resBuffer.toString("utf8")
     res.statusCode = 200
-    return resBuffer.toString("utf8")
-  }),*/
+    return text
+  }),
   pathRewrite(path, req) {
     return slice(path).slice(1).join("/");
   }
