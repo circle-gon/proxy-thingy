@@ -14,6 +14,13 @@ export function isValidURL(test) {
   return hasProtocol(test)
 }
 
+export function addProtocol(url, httpsOrNot) {
+  // either add the correct protocol
+  // or delete the wrong one and add the correct one
+  return `http${httpsOrNot ? "s" : ""}://`
+    + url.replace(/http(s)?:\/\//, "");
+}
+
 export function slice(url) {
   return url.slice(1).split("/");
 }
@@ -22,7 +29,7 @@ export function slice(url) {
 // also less bad code/duplication
 export function proxyURL(url, origin) {
   const uri = new URL(url);
-  return (
+  return addProtocol(
     origin +
     "/" +
     encodeURIComponent(uri.origin) +
