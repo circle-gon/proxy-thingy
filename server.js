@@ -7,6 +7,7 @@ import {
 import { isValidURL, slice } from "./shared/utils.js";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
+import {getCorrectURL} from "./replaceURL.js"
 //import {Server} from "socket.io"
 //import {createServer} from "node:http"
 
@@ -34,7 +35,11 @@ const options = {
       const text = resBuffer.toString("utf8");
       const dom = new JSDOM(text);
       const document = dom.window.document
-      
+      for (const ele of document.getElementsByTagName("script")) {
+        if (ele.src) {
+          ele.src = getCorrectURL(ele.src, )
+        }
+      }
       return text;
     }
     return resBuffer;
@@ -60,6 +65,8 @@ app.use(createProxyMiddleware(filter, options));
 app.get("/:url", (req, res) => {
   res.send(`URL "${req.params.url}" is not a valid url.`);
 });
+
+
 
 /*io.on("connection", (socket) => {
   console.log("someone connected")
