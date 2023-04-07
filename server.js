@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
 import {getCorrectURL} from "./replaceURL.js"
 
+// path to where this file is located, may be used (or not)
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 // Create Express Server
