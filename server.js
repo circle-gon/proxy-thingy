@@ -33,6 +33,8 @@ const options = {
     if (res.getHeader("Content-Type") === "text/html") {
       const text = resBuffer.toString("utf8");
       const dom = new JSDOM(text);
+      const document = dom.window.document
+      
       return text;
     }
     return resBuffer;
