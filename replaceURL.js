@@ -1,26 +1,22 @@
 import { isValidURL, proxyURL, slice, hasProtocol } from "./shared/utils.js";
 
-function addProtocol(url) {
-  if (!url.startsWith("https://"))
-    return "https://" + url.replace("http://", "");
-  return url;
+function addProtocol(url, httpsOrNot) {
+  // add http(s):// and replace http(s):// with actual one
+  return `http${httpsOrNot ? "s" : ""}://`
+    + url.replace(`http${httpsOrNot ? "" : "s"}://`, "");
 }
 
 function ignoreURL(url) {
   return false;
 }
 
-export function getCorrectURL(uri, origin, pathname) {
+export function getCorrectURL(uri, origin, pathname, useHttps) {
   if (ignoreURL(uri)) {
+    // blacklisted urls
     return uri;
   } else if (uri.startsWith("//")) {
-    const fix = addProtocol(uri.replace("//", ""));
-    // url to another page
-
-    // this url is to this page, not another page
-    if (fix.startsWith(origin)) return uri;
-
-    return proxyURL(addProtocol(fix));
+    // url to another page, starting with // 
+    // (technically a relative one but :shrug:)
   } else if (uri.startsWith("/")) {
     // url to root
     return (
@@ -28,12 +24,10 @@ export function getCorrectURL(uri, origin, pathname) {
     );
   } else if (hasProtocol(uri)) {
     // url to another page
-
-    // this url is to this page
-    if (uri.startsWith(origin)) return uri;
-    return proxyURL(uri);
   } else {
     // other url types or relative url
     return uri;
   }
+  console.warn("Oops, this url (" + uri + ") wasn't handled properly.")
+  return uri
 }

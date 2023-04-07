@@ -8,22 +8,16 @@ import { isValidURL, slice } from "./shared/utils.js";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
 import {getCorrectURL} from "./replaceURL.js"
-//import {Server} from "socket.io"
-//import {createServer} from "node:http"
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 // Create Express Server
 const app = express();
-//const server = createServer(app)
-// const io = new Server(server)
 
 // Configuration
-const PORT = 3000;
-/*const SCRIPT_TAG = `<script type="module" src="/replaceHTML.js"></script>`;
-const CONTENT_SECURITY_POLICY_BASE = "script-src https://adaptive-tricolor-whip.glitch.me/"
-const IS_DEV = true*/
 
+// process.env.PORT is builtin
+const PORT = process.env.PORT
 const options = {
   changeOrigin: true,
   router(req) {
@@ -66,20 +60,10 @@ app.use(express.static("static"));
 app.use(createProxyMiddleware(filter, options));
 
 app.get("/:url", (req, res) => {
-  res.send(`URL "${req.params.url}" is not a valid url.`);
+  res.send(`URL "${req.params.url}" is not a valid url 
+  (or it isn't percent encoded properly). Maybe you should
+  go to <a href="/">home</a> instead?`);
 });
-
-
-
-/*io.on("connection", (socket) => {
-  console.log("someone connected")
-})
-
-app.get("/pong", (req, res) => {
-  res.send("Ping!")
-})
-
-app.use(express.static("io-static"))*/
 
 // Start the Proxy
 app.listen(PORT, () => {

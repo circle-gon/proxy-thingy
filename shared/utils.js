@@ -1,3 +1,5 @@
+// TODO: make this server client angostic 
+
 export function hasProtocol(url) {
   return url.startsWith("http://") || url.startsWith("https://")
 }
