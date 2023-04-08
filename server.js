@@ -33,7 +33,7 @@ const options = {
       const document = dom.window.document
       for (const ele of document.getElementsByTagName("script")) {
         if (ele.src) {
-          ele.src = getCorrectURL(ele.src, req.host, req.path)
+          ele.src = getCorrectURL(ele.src, )
         }
       }
       return text;
