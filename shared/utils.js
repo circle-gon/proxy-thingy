@@ -23,11 +23,11 @@ export function slice(url) {
 // url should start with http vs https based on current page
 export function proxyURL(url, currentURL) {
   const originGo = new URL(url).origin;
-  const c = new URL(currentURL);
+  // default to https, not that it matters anyway
+  // if you're using http you have a problem
   return (
-    c.protocol +
-    "//" +
-    c.origin +
+    "https://" +
+    origin +
     "/" +
     encodeURIComponent(originGo) +
     // prefer this over url.pathname as it always
