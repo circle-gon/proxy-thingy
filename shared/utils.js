@@ -1,7 +1,7 @@
-// TODO: make this server client angostic 
+// TODO: make this server client angostic
 
-export function hasProtocol(url) {
-  return url.startsWith("http://") || url.startsWith("https://")
+export function hasHTTPProtocol(url) {
+  return url.startsWith("http://") || url.startsWith("https://");
 }
 
 export function isValidURL(test) {
@@ -11,30 +11,27 @@ export function isValidURL(test) {
   } catch (e) {
     return false;
   }
-  return hasProtocol(test)
+  return hasHTTPProtocol(test);
 }
-
-export function addProtocol(url, httpsOrNot) {
-  // either add the correct protocol
-  // or delete the wrong one and add the correct one
-  return `http${httpsOrNot ? "s" : ""}://`
-    + url.replace(/http(s)?:\/\//, "");
-}
-
 export function slice(url) {
   return url.slice(1).split("/");
 }
 
 // forcing origin as an option is better because http/https differences
 // also less bad code/duplication
-export function proxyURL(url, origin) {
-  const uri = new URL(url);
-  return addProtocol(
-    origin +
+
+// url should start with http vs https based on current page
+export function proxyURL(url, currentURL) {
+  const originGo = new URL(url).origin;
+  const c = new URL(currentURL);
+  return (
+    c.protocol +
+    "//" +
+    c.origin +
     "/" +
-    encodeURIComponent(uri.origin) +
+    encodeURIComponent(originGo) +
     // prefer this over url.pathname as it always
     // starts with /, even if you don't specify it
-    url.replace(uri.origin, "")
+    url.replace(originGo, "")
   );
 }
