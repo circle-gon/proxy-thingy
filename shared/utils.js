@@ -21,7 +21,7 @@ export function slice(url) {
 // also less bad code/duplication
 
 // url should start with http vs https based on current page
-export function proxyURL(url, currentURL) {
+export function proxyURL(url, origin) {
   const originGo = new URL(url).origin;
   // default to https, not that it matters anyway
   // if you're using http you have a problem

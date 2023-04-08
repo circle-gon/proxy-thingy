@@ -19,7 +19,7 @@
 
       button.onclick = () => {
         if (isValidURL(input.value)) {
-          window.location.href = proxyURL(input.value, document.location.href);
+          window.location.href = proxyURL(input.value, document.location.origin);
         } else {
           error.innerHTML = "Oops, that is not a valid url. Try again!";
         }
