@@ -6,6 +6,10 @@ function ignoreURL(url) {
   return false;
 }
 
+function isCorrectOrigin(uri) {
+  return new URL(uri).origin === origin
+}
+
 export function getCorrectURL(uri, currentURL) {
   const url = new URL(currentURL)
   const protocol = url.protocol
@@ -18,7 +22,7 @@ export function getCorrectURL(uri, currentURL) {
     const goTo = uri.replace("//", "")
     
     // points to itself
-    if (goTo.startsWith(origin)) return uri
+    if (isCorrectOrigin(goTo)) return uri
     
     return proxyURL(new URL(decodeURIComponent(urlPath)).protocol + "//" + goTo, origin)
   } else if (uri.startsWith("/")) {
@@ -27,7 +31,7 @@ export function getCorrectURL(uri, currentURL) {
   } else if (hasHTTPProtocol(uri)) {
     // url to another page, http or https
     // other protocols are outside this scope
-    if (uri.startsWith(origin)) return uri
+    if (isCorrectOrigin(uri)) return uri
     return proxyURL(uri, origin)
   } else {
     // other url types or relative url
