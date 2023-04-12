@@ -7,18 +7,20 @@ import {
 import { isValidURL, slice } from "./shared/utils.js";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
-import {getCorrectURL} from "./replaceURL.js"
+//import { getCorrectURL } from "./replaceURL.js";
 
 // path to where this file is located, may be used (or not)
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 // Create Express Server
 const app = express();
+const PROJECT_DOMAIN = `<script>window.$$PROJECT_DOMAIN$$="${process.env.PROJECT_DOMAIN}"</script>`
+const INJECTION = '<script src="injection.js"></script>'
 
 // Configuration
 
 // process.env.PORT is builtin
-const PORT = process.env.PORT
+const PORT = process.env.PORT;
 const options = {
   changeOrigin: true,
   router(req) {
@@ -26,20 +28,15 @@ const options = {
   },
   selfHandleResponse: true,
   onProxyRes: responseInterceptor(async (resBuffer, proxyRes, req, res) => {
-    /*if (res.getHeader("Content-Type") === "text/html") {
-      const text = resBuffer.toString("utf8");
-      
-      const dom = new JSDOM(text);
-      const document = dom.window.document
-      for (const ele of document.getElementsByTagName("script")) {
-        if (ele.src) {
-          ele.src = getCorrectURL(ele.src, )
-        }
-      }
-      return text;
-    }*/
-    console.log("PROXIED")
-    console.log(`target: ${proxyRes.req.protocol}//${proxyRes.req.host}${proxyRes.req.path}`);
+    if (res.getHeader("Content-Type") === "text/html") {
+      return resBuffer
+        .toString("utf-8")
+        .replace("<head>", "<head>" + PROJECT_DOMAIN + INJECTION);
+    }
+    console.log("PROXIED");
+    console.log(
+      `target: ${proxyRes.req.protocol}//${proxyRes.req.host}${proxyRes.req.path}`
+    );
     return resBuffer;
   }),
   pathRewrite(path, req) {

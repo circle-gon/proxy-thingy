@@ -1,6 +1,6 @@
-import { proxyURL, slice, hasHTTPProtocol } from "./shared/utils.js";
+import { proxyURL, slice, hasHTTPProtocol } from "./utils.js";
 
-const origin = process.env.PROJECT_DOMAIN + ".glitch.me"
+const origin = window.$$PROJECT_DOMAIN$$ + ".glitch.me"
 
 function ignoreURL(url) {
   return false;
