@@ -7,6 +7,9 @@ if ('serviceWorker' in navigator) {
       alert("Failed to register service worker. Reason: " + err.toString())
       console.log('Service worker registration failed: ', err);
     });
+    navigator.serviceWorker.ready.then(() => {
+      alert("Success! it has loaded")
+    })
   });
 } else {
   alert("Your browser does not support ServiceWorker. You should probably update your browser, it's pretty old anyway...")
