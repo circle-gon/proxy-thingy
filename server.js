@@ -14,8 +14,8 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 // Create Express Server
 const app = express();
-const PROJECT_DOMAIN = `<script>window.$$PROJECT_DOMAIN$$="${process.env.PROJECT_DOMAIN}"</script>`
-const INJECTION = '<script src="injection.js"></script>'
+const PROJECT_DOMAIN = `<script>window.$PROJECT_DOMAIN$="${process.env.PROJECT_DOMAIN}"</script>`
+const INJECTION = '<script src="/injection.js"></script>'
 
 // Configuration
 
@@ -28,15 +28,17 @@ const options = {
   },
   selfHandleResponse: true,
   onProxyRes: responseInterceptor(async (resBuffer, proxyRes, req, res) => {
-    if (res.getHeader("Content-Type") === "text/html") {
-      return resBuffer
-        .toString("utf-8")
-        .replace("<head>", "<head>" + PROJECT_DOMAIN + INJECTION);
-    }
     console.log("PROXIED");
     console.log(
       `target: ${proxyRes.req.protocol}//${proxyRes.req.host}${proxyRes.req.path}`
     );
+    console.log(proxyRes.headers["content-type"])
+    if (proxyRes.headers['content-type']?.includes("text/html")) {
+      return resBuffer
+        .toString("utf-8")
+        .replace("<head>", "<head>" + PROJECT_DOMAIN + INJECTION);
+    }
+    
     return resBuffer;
   }),
   pathRewrite(path, req) {
