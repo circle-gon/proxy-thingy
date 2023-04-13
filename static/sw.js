@@ -14,7 +14,7 @@ async function deleteOldCaches() {
 }
 
 function replaceURL(originalURL) {
-  
+  const url    
 }
 
 async function cacheFirst(request) {

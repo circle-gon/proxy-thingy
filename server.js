@@ -7,7 +7,7 @@ import {
 import { isValidURL, slice } from "./shared/utils.js";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
-import {readFileSync} from "node:fs"
+import { readFileSync } from "node:fs";
 //import { getCorrectURL } from "./replaceURL.js";
 
 // path to where this file is located, may be used (or not)
@@ -15,16 +15,18 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 // Create Express Server
 const app = express();
-const INJECTION = '<script src="/injection.js"></script>'
+const INJECTION = '<script src="/injection.js"></script>';
 
 // Configuration
 
 // process.env.PORT is builtin
 const PORT = process.env.PORT;
+const PROJECT_DOMAIN = process.env.PROJECT_DOMAIN + ".glitch.me";
+
 const options = {
   changeOrigin: true,
   router(req) {
-    return decodeURIComponent(slice(req.url)[0]);
+    return getFirst(req.url);
   },
   selfHandleResponse: true,
   onProxyRes: responseInterceptor(async (resBuffer, proxyRes, req, res) => {
@@ -32,13 +34,13 @@ const options = {
     console.log(
       `target: ${proxyRes.req.protocol}//${proxyRes.req.host}${proxyRes.req.path}`
     );
-    console.log(proxyRes.headers["content-type"])
-    if (proxyRes.headers['content-type']?.includes("text/html")) {
+    console.log(proxyRes.headers["content-type"]);
+    if (proxyRes.headers["content-type"]?.includes("text/html")) {
       return resBuffer
         .toString("utf-8")
         .replace("<head>", "<head>" + INJECTION);
     }
-    
+
     return resBuffer;
   }),
   pathRewrite(path, req) {
@@ -50,15 +52,25 @@ function filter(pathname, req) {
   return isValidURL(getFirst(req.url));
 }
 
-function replaceChars(filePath) {
-  
+function getFirst(url) {
+  return decodeURIComponent(slice(url)[0]);
+}
+
+function replaceChars(filePath, contentType, base = "static") {
+  app.get("/" + filePath, (req, res) => {
+    const text = readFileSync(
+      __dirname + "/" + base + "/" + filePath,
+      "utf8"
+    ).replaceAll("$$PROJECT_DOMAIN$$", PROJECT_DOMAIN);
+    res.setHeader("Content-Type", contentType);
+    res.send(text);
+  });
 }
 
 app.use(morgan("dev"));
 
-app.get("/sw.js", (req, res) => {
-  const text = sendFile(__dirname + "/static/sw.js")
-})
+replaceChars("sw.js", "text/javascript");
+replaceChars("replaceURL.js", "text/javascript");
 
 app.use(express.static("shared"));
 app.use(express.static("static"));
