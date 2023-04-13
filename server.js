@@ -70,7 +70,6 @@ function replaceChars(filePath, contentType, base = "static") {
 app.use(morgan("dev"));
 
 replaceChars("sw.js", "text/javascript");
-replaceChars("replaceURL.js", "text/javascript");
 
 app.use(express.static("shared"));
 app.use(express.static("static"));
