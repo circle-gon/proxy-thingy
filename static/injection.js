@@ -8,7 +8,7 @@ if ('serviceWorker' in navigator) {
       console.log('Service worker registration failed: ', err);
     });
     navigator.serviceWorker.ready.then(() => {
-      alert("Success! it has loaded")
+      //alert("Success! it has loaded")
     })
   });
 } else {
