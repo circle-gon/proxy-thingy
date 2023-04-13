@@ -1,4 +1,11 @@
-const CACHE_KEY = "v0.0.1";
+const CACHE_KEY = "v0.0.2";
+
+const DOMAIN = "$$PROJECT_DOMAIN$$"
+
+async function putInCache(request, response) {
+  const cache = await caches.open(CACHE_KEY);
+  await cache.put(request, response);
+};
 
 async function deleteOldCaches() {
   const keyList = await caches.keys();
@@ -6,22 +13,40 @@ async function deleteOldCaches() {
   await Promise.all(cachesToDelete.map((r) => caches.delete(r)));
 }
 
-async function addResourcesToCache(resources) {
-  const cache = await caches.open(CACHE_KEY);
-  await cache.addAll(resources);
+function replaceURL(originalURL) {
+  
 }
 
-self.addEventListener("install", (e) => {
-  e.waitUntil(addResourcesToCache(["/https%3A%2F%2Fglitch.com/favicon.ico"]));
-});
+async function cacheFirst(request) {
+  // First try to get the resource from the cache
+  const responseFromCache = await caches.match(request);
+  if (responseFromCache) {
+    return responseFromCache;
+  }
+
+  // Next try to get the resource from the network
+  try {
+    const responseFromNetwork = await fetch(request);
+    // response may be used only once
+    // we need to save clone to put one copy in cache
+    // and serve second one
+    putInCache(request, responseFromNetwork.clone());
+    return responseFromNetwork;
+  } catch (error) {
+    // when even the fallback response is not available,
+    // there is nothing we can do, but we must always
+    // return a Response object
+    return new Response("Network error happened", {
+      status: 408,
+      headers: { "Content-Type": "text/plain" },
+    });
+  }
+};
 
 self.addEventListener("activate", (e) => {
   e.waitUntil(deleteOldCaches());
 });
 
 self.addEventListener("fetch", (e) => {
-  const url = new URL(e.request.url)
-  if (url.pathname === "/favicon.ico") {
-    e.respondWith(caches.match('/https%3A%2F%2Fglitch.com/favicon.ico'));
-  }
+  e.respondWith(cacheFirst(e.request))
 });

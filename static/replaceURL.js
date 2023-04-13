@@ -1,6 +1,6 @@
 import { proxyURL, slice, hasHTTPProtocol } from "./utils.js";
 
-const origin = window.$PROJECT_DOMAIN$ + ".glitch.me"
+const origin = "$$PROJECT_DOMAIN$$"
 
 function ignoreURL(url) {
   return false;
