@@ -2,7 +2,7 @@ const CACHE_KEY = "v0.0.1";
 
 async function deleteOldCaches() {
   const keyList = await caches.keys();
-  const cachesToDelete = keyList.filter((k) => k === CACHE_KEY);
+  const cachesToDelete = keyList.filter((k) => k !== CACHE_KEY);
   await Promise.all(cachesToDelete.map((r) => caches.delete(r)));
 }
 
