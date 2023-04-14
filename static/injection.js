@@ -3,14 +3,18 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').then(r => {
       console.log('Service worker registered with scope: ', r.scope);
       //alert("Success! service worker loaded")
-    }, err => {
-      alert("Failed to register service worker. Reason: " + err.toString())
-      console.log('Service worker registration failed: ', err);
+    }).catch(err => {
+      alert("Failed to register service worker. Reloading page... Reason: " + err.toString())
+      window.location.reload();
     });
     navigator.serviceWorker.ready.then(() => {
       //alert("Success! it has loaded")
     })
   });
 } else {
-  alert("Your browser does not support ServiceWorker. You should probably update your browser, it's pretty old anyway...")
+  if (window.location.href.startsWith("http://")) {
+    alert("Page connected to in http, reloading in https...")
+    window.location.href = window.location.href.replace("http://", "https://")
+  }
+  alert("Your browser does not support ServiceWorker, update your browser!")
 }
