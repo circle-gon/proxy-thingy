@@ -4,7 +4,7 @@ import {
   createProxyMiddleware,
   responseInterceptor,
 } from "http-proxy-middleware";
-import { isValidURL, slice } from "./shared/utils.js";
+import { isValidURL, slice, getFirst } from "./shared/utils.js";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
 import { readFileSync } from "node:fs";
@@ -49,10 +49,6 @@ const options = {
 
 function filter(pathname, req) {
   return isValidURL(getFirst(req.url));
-}
-
-function getFirst(url) {
-  return decodeURIComponent(slice(url)[0]);
 }
 
 app.use(morgan("dev"));

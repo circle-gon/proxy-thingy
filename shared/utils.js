@@ -17,6 +17,10 @@ export function slice(url) {
   return url.slice(1).split("/");
 }
 
+export function getFirst(url) {
+  return decodeURIComponent(slice(url)[0]);
+}
+
 // forcing origin as an option is better because http/https differences
 // also less bad code/duplication
 
