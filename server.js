@@ -15,13 +15,12 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 // Create Express Server
 const app = express();
-const INJECTION = '<script src="/injection.js"></script>';
+const INJECTION = '<script src="/injection.js?proxyresource"></script>';
 
 // Configuration
 
 // process.env.PORT is builtin
 const PORT = process.env.PORT;
-const PROJECT_DOMAIN = process.env.PROJECT_DOMAIN + ".glitch.me";
 
 const options = {
   changeOrigin: true,

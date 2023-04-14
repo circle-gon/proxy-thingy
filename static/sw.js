@@ -1,16 +1,20 @@
-const CACHE_KEY = "v0.0.2";
+//const CACHE_KEY = "v0.0.2";
 
-const DOMAIN = self.location.host
+const DOMAIN = self.location.hostname
 
 async function deleteOldCaches() {
   const keyList = await caches.keys();
-  const cachesToDelete = keyList.filter((k) => k !== CACHE_KEY);
+  const cachesToDelete = keyList//.filter((k) => k !== CACHE_KEY);
   await Promise.all(cachesToDelete.map((r) => caches.delete(r)));
 }
 
 function replaceURL(originalURL, currentBase) {
   const url = new URL(originalURL)
-  if (url.hostname === DOMAIN) {
+  const params = new URLSearchParams(url.search)
+  
+  // this is a proxyresource, which should not be altered
+  if (params.has("proxyresource")) return originalURL
+  else if (url.hostname === DOMAIN) {
     // case 0: it's an DOMAIN/ resource
     
     // case 1: it's a / url, which means that the url will be like 
