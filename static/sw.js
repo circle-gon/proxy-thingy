@@ -1,4 +1,4 @@
-import {getFirst, isValidURL, proxyURL} from "./utils.js?proxyresource"
+import { getFirst, isValidURL, proxyURL } from "./utils.js?proxyresource";
 
 //const CACHE_KEY = "v0.0.2";
 
@@ -17,20 +17,30 @@ function replaceURL(originalURL, currentBase) {
   // this is a proxyresource, which should not be altered
   if (params.has("proxyresource")) return originalURL;
   else if (url.hostname === DOMAIN) {
-    const basePath = getFirst(url.pathname)
+    const basePath = getFirst(url.pathname);
     if (isValidURL(basePath)) return originalURL;
-    return "https://" + DOMAIN + "/"
+    return "https://" + DOMAIN + "/" + currentBase + url.pathname;
   } else {
-    
+    return proxyURL(originalURL, DOMAIN);
   }
 }
 
-async function mockClientRequest(request) {}
+async function mockClientRequest(request, id) {
+  // 1. get the url originating the request
+  const clientURL = (await self.clients.get(id)).url;
+  
+  // 2. get a new url
+  const newURL = replaceURL(request.url, getFirst(new URL(clientURL).pathname));
+  
+  // 3. change the request
+  
+  // 4. return it
+}
 
 self.addEventListener("activate", (e) => {
   e.waitUntil(deleteOldCaches());
 });
 
 self.addEventListener("fetch", (e) => {
-  e.respondWith(mockClientRequest(e.request));
+  e.respondWith(mockClientRequest(e.request, e.clientId));
 });
