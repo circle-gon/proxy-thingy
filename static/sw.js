@@ -1,6 +1,6 @@
 const CACHE_KEY = "v0.0.2";
 
-const DOMAIN = "$$PROJECT_DOMAIN$$"
+const DOMAIN = self.location.host
 
 async function putInCache(request, response) {
   const cache = await caches.open(CACHE_KEY);

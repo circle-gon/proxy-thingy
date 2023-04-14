@@ -56,20 +56,7 @@ function getFirst(url) {
   return decodeURIComponent(slice(url)[0]);
 }
 
-function replaceChars(filePath, contentType, base = "static") {
-  app.get("/" + filePath, (req, res) => {
-    const text = readFileSync(
-      __dirname + "/" + base + "/" + filePath,
-      "utf8"
-    ).replaceAll("$$PROJECT_DOMAIN$$", PROJECT_DOMAIN);
-    res.setHeader("Content-Type", contentType);
-    res.send(text);
-  });
-}
-
 app.use(morgan("dev"));
-
-replaceChars("sw.js", "text/javascript");
 
 app.use(express.static("shared"));
 app.use(express.static("static"));
