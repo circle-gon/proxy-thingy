@@ -2,11 +2,6 @@ const CACHE_KEY = "v0.0.2";
 
 const DOMAIN = self.location.host
 
-async function putInCache(request, response) {
-  const cache = await caches.open(CACHE_KEY);
-  await cache.put(request, response);
-};
-
 async function deleteOldCaches() {
   const keyList = await caches.keys();
   const cachesToDelete = keyList.filter((k) => k !== CACHE_KEY);
