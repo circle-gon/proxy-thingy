@@ -33,8 +33,11 @@ async function mockClientRequest(request, id) {
   const newURL = replaceURL(request.url, getFirst(new URL(clientURL).pathname));
   
   // 3. change the request
+  const r = new Request(newURL, request)
   
   // 4. return it
+  
+  return await fetch(r)
 }
 
 self.addEventListener("activate", (e) => {
