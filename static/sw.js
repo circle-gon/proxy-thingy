@@ -59,7 +59,7 @@ function replaceURL(originalURL, currentBase) {
   else if (url.hostname === DOMAIN) {
     const basePath = getFirst(url.pathname);
     if (isValidURL(basePath)) return originalURL;
-    return "https://" + DOMAIN + "/" + currentBase + url.pathname;
+    return "https://" + DOMAIN + "/" + encodeURIComponent(currentBase) + url.pathname;
   } else {
     return proxyURL(originalURL, DOMAIN);
   }
