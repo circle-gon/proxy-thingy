@@ -5,7 +5,6 @@ if ('serviceWorker' in navigator) {
       //alert("Success! service worker loaded")
     }).catch(err => {
       alert("Failed to register service worker. Reloading page... Reason: " + err.toString())
-      window.location.reload();
     });
     navigator.serviceWorker.ready.then(() => {
       //alert("Success! it has loaded")
