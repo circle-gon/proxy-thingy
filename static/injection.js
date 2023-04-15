@@ -1,6 +1,6 @@
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js?proxyresource').then(r => {
+    navigator.serviceWorker.register('/sws.js?proxyresource').then(r => {
       console.log('Service worker registered with scope: ', r.scope);
       //alert("Success! service worker loaded")
     }).catch(err => {
