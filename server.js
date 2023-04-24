@@ -16,6 +16,7 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 // Create Express Server
 const app = express();
 const INJECTION = '<script src="/injection.js?proxyresource"></script>';
+const CSP = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/;"
 
 // Configuration
 
@@ -35,7 +36,7 @@ const options = {
     );
     console.log(proxyRes.headers["content-type"]);
     if (proxyRes.headers["content-type"]?.includes("text/html")) {
-      res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/")
+      //res.setHeader("Content-Security-Policy", CSP)
       return resBuffer
         .toString("utf-8")
         .replace("<head>", "<head>" + INJECTION);
