@@ -35,6 +35,7 @@ const options = {
     );
     console.log(proxyRes.headers["content-type"]);
     if (proxyRes.headers["content-type"]?.includes("text/html")) {
+      res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/")
       return resBuffer
         .toString("utf-8")
         .replace("<head>", "<head>" + INJECTION);
