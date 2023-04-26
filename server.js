@@ -6,7 +6,6 @@ import {
 } from "http-proxy-middleware";
 import { isValidURL, slice, getFirst } from "./shared/utils.js";
 import { fileURLToPath } from "node:url";
-import { JSDOM } from "jsdom";
 import { readFileSync } from "node:fs";
 //import { getCorrectURL } from "./replaceURL.js";
 
