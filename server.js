@@ -29,7 +29,7 @@ const options = {
   },
   selfHandleResponse: true,
   onProxyRes: responseInterceptor(async (resBuffer, proxyRes, req, res) => {
-    console.log("PROXIED");
+   /* console.log("PROXIED");
     console.log(
       `target: ${proxyRes.req.protocol}//${proxyRes.req.host}${proxyRes.req.path}`
     );
@@ -39,7 +39,7 @@ const options = {
       return resBuffer
         .toString("utf-8")
         .replace("<head>", "<head>" + INJECTION);
-    }
+    }*/
 
     return resBuffer;
   }),
