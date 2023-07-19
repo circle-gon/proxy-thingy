@@ -2,9 +2,8 @@
   "name": "glitch-hello-node",
   "version": "0.1.0",
   "main": "server.js",
-  "type": "module",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server2.js"
   },
   "dependencies": {
     "express": "^4.18.2",
