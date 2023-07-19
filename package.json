@@ -1,14 +1,17 @@
 {
   "name": "glitch-hello-node",
+  "private": true,
   "version": "0.1.0",
+  "type": "module",
   "main": "server.js",
   "scripts": {
-    "start": "node server2.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
     "http-proxy-middleware": "^2.0.6",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "puppeteer": "^20.8.3"
   },
   "engines": {
     "node": "16.x"
