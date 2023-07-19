@@ -14,6 +14,7 @@ export function isValidURL(test) {
   return hasHTTPProtocol(test);
 }
 export function slice(url) {
+  // strip leading slash
   return url.slice(1).split("/");
 }
 

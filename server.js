@@ -6,11 +6,11 @@ import {
 } from "http-proxy-middleware";
 import { isValidURL, slice, getFirst } from "./shared/utils.js";
 import { fileURLToPath } from "node:url";
-import { readFileSync } from "node:fs";
+// import { readFileSync } from "node:fs";
 //import { getCorrectURL } from "./replaceURL.js";
 
 // path to where this file is located, may be used (or not)
-const __dirname = fileURLToPath(new URL(".", import.meta.url));
+// const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 // Create Express Server
 const app = express();
