@@ -14,6 +14,8 @@ import { fileURLToPath } from "node:url";
 
 // Create Express Server
 const app = express();
+
+
 const INJECTION = '<script src="/injection.js?proxyresource"></script>';
 const CSP = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/;";
 const erudaGoBrr = `(function () {
@@ -27,6 +29,8 @@ const erudaGoBrr = `(function () {
   };
   document.body.appendChild(script);
 })();`
+
+const STATIC_FILE_LOCATION = "/9wioefjlsu09w3ueriofsjd"
 // Configuration
 
 // process.env.PORT is builtin
@@ -35,7 +39,7 @@ const PORT = process.env.PORT;
 const options = {
   changeOrigin: true,
   router(req) {
-    return getFirst(req.url);
+    return req.cookies.baseURL;
   },
   followRedirects: true,
   selfHandleResponse: true,
@@ -65,15 +69,20 @@ function filter(pathname, req) {
 
 app.use(morgan("dev"));
 
-app.use(express.static("shared"));
-app.use(express.static("static"));
-app.use(createProxyMiddleware(filter, options));
+app.use(STATIC_FILE_LOCATION, express.static("shared"));
+app.use(STATIC_FILE_LOCATION, express.static("static"));
+app.use(createProxyMiddleware(options));
 
-app.get("/:url", (req, res) => {
+
+/*app.get("/:url", (req, res) => {
   res.send(`URL "${req.params.url}" is not a valid url 
   (or it isn't percent encoded properly). Maybe you should
   go to <a href="/">home</a> instead?`);
-});
+});*/
+
+app.get("/", (req, res) => {
+  res.redirect(STATIC_FILE_LOCATION)
+})
 
 // Start the Proxy
 app.listen(PORT, () => {
