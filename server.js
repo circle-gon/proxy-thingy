@@ -6,6 +6,7 @@ import {
 } from "http-proxy-middleware";
 import { isValidURL, slice, getFirst } from "./shared/utils.js";
 import { fileURLToPath } from "node:url";
+import cookieParser from "cookie-parser"
 // import { readFileSync } from "node:fs";
 //import { getCorrectURL } from "./replaceURL.js";
 
@@ -85,13 +86,18 @@ function filter(pathname, req) {
 }
 
 app.use(morgan("dev"));
+app.use(cookieParser())
 
 app.use(STATIC_FILE_LOCATION, express.static("shared"));
 app.use(STATIC_FILE_LOCATION, express.static("static"));
 app.get("/", (req, res, next) => {
-  console.log(req)
+  console.log(req.cookies)
   if (!req.cookies.baseURL) res.redirect(STATIC_FILE_LOCATION)
   else next()
+})
+
+app.get("/foo", (req, res) => {
+  res.send(JSON.stringify(req.cookies))
 })
 
 
