@@ -13,14 +13,19 @@
     ><br />
     <span id="error" style="color: red"></span>
     <script type="module">
-      import { isValidURL, proxyURL } from "/utils.js?proxyresource";
+      import { isValidURL } from "./utils.js";
+      
+      alert("Poop")
       const input = document.getElementById("go");
       const error = document.getElementById("error");
       const button = document.getElementById("button");
 
       button.onclick = () => {
         if (isValidURL(input.value)) {
-          window.location.href = proxyURL(input.value, document.location.host);
+          // 1. get the base url
+          const url = new URL(input.value)
+          document.cookie = `baseURL=${url.origin}`
+          window.location.href = window.location.origin + url.pathname
         } else {
           error.innerHTML = "Oops, that is not a valid url. Try again!";
         }

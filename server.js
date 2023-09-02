@@ -15,6 +15,22 @@ import { fileURLToPath } from "node:url";
 // Create Express Server
 const app = express();
 
+function parseCookies(request) {
+    const list = {};
+    const cookieHeader = request.headers?.cookie;
+    if (!cookieHeader) return list;
+
+    cookieHeader.split(`;`).forEach(function(cookie) {
+        let [ name, ...rest] = cookie.split(`=`);
+        name = name?.trim();
+        if (!name) return;
+        const value = rest.join(`=`).trim();
+        if (!value) return;
+        list[name] = decodeURIComponent(value);
+    });
+
+    return list;
+}
 
 const INJECTION = '<script src="/injection.js?proxyresource"></script>';
 const CSP = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/;";
@@ -39,7 +55,8 @@ const PORT = process.env.PORT;
 const options = {
   changeOrigin: true,
   router(req) {
-    return req.cookies.baseURL;
+    const cookies = parseCookies(req);
+    return cookies.baseURL;
   },
   followRedirects: true,
   selfHandleResponse: true,
@@ -71,6 +88,13 @@ app.use(morgan("dev"));
 
 app.use(STATIC_FILE_LOCATION, express.static("shared"));
 app.use(STATIC_FILE_LOCATION, express.static("static"));
+app.get("/", (req, res, next) => {
+  console.log(req)
+  if (!req.cookies.baseURL) res.redirect(STATIC_FILE_LOCATION)
+  else next()
+})
+
+
 app.use(createProxyMiddleware(options));
 
 
@@ -79,11 +103,6 @@ app.use(createProxyMiddleware(options));
   (or it isn't percent encoded properly). Maybe you should
   go to <a href="/">home</a> instead?`);
 });*/
-
-app.get("/", (req, res) => {
-  res.redirect(STATIC_FILE_LOCATION)
-})
-
 // Start the Proxy
 app.listen(PORT, () => {
   console.log(`Starting Proxy at port ${PORT}`);
