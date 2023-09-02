@@ -57,6 +57,7 @@ const options = {
   changeOrigin: true,
   router(req) {
     const cookies = parseCookies(req);
+    console.log(cookies)
     return cookies.baseURL;
   },
   followRedirects: true,
