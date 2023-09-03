@@ -24,13 +24,18 @@ function addSW() {
     .register("/sw.js?proxyresource")
     .then((r) => {
       console.log("Service worker registered with scope: ", r.scope);
+
+      if (r.installing) {
+        console.log("Service worker installing");
+      } else if (r.waiting) {
+        console.log("Service worker installed");
+      } else if (r.active) {
+        console.log("Service worker active");
+      }
       //alert("Success! service worker loaded")
     })
     .catch((err) => {
-      alert(
-        "Failed to register service worker. Reason: " +
-          err.toString()
-      );
+      alert("Failed to register service worker. Reason: " + err.toString());
     });
   /*navigator.serviceWorker.ready.then(() => {
     //alert("Success! it has loaded")
@@ -39,7 +44,7 @@ function addSW() {
 
 window.addEventListener("load", () => {
   // add eruda da be do be
-  addEruda()
-  
-  if (SERVICE_WORKER_SUPPORT) addSW()
+  addEruda();
+
+  if (SERVICE_WORKER_SUPPORT) addSW();
 });
