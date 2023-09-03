@@ -75,9 +75,7 @@ async function mockClientRequest(request, id) {
 
     // 4. return it
 
-    return await fetch(r, {
-      duplex: "half"
-    });
+    return await fetch(r);
   }
   return await fetch(request);
 }
