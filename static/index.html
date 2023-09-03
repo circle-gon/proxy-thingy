@@ -11,34 +11,16 @@
     >
       Go!</button
     ><br />
-    <span id="cookie"></span>
     <span id="error" style="color: red"></span>
     <script type="module">
-      import { isValidURL } from "./utils.js";
-      
-  
+      import { isValidURL, proxyURL } from "/utils.js?proxyresource";
       const input = document.getElementById("go");
       const error = document.getElementById("error");
       const button = document.getElementById("button");
-      const cookie = document.getElementById("cookie")
-      
-      const list = {}
-      document.cookie.split(`;`).forEach(function(cookie) {
-        let [ name, ...rest] = cookie.split(`=`);
-        name = name?.trim();
-        if (!name) return;
-        const value = rest.join(`=`).trim();
-        if (!value) return;
-        list[name] = decodeURIComponent(value);
-    });
-      cookie.innerHTML = JSON.stringify(list)
 
       button.onclick = () => {
         if (isValidURL(input.value)) {
-          // 1. get the base url
-          const url = new URL(input.value)
-          document.cookie = `baseURL=${url.origin};max-age=${60*60*24*365};samesite=strict`
-          window.location.href = window.location.origin + url.pathname
+          window.location.href = proxyURL(input.value, document.location.host);
         } else {
           error.innerHTML = "Oops, that is not a valid url. Try again!";
         }

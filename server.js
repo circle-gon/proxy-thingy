@@ -6,7 +6,6 @@ import {
 } from "http-proxy-middleware";
 import { isValidURL, slice, getFirst } from "./shared/utils.js";
 import { fileURLToPath } from "node:url";
-import cookieParser from "cookie-parser"
 // import { readFileSync } from "node:fs";
 //import { getCorrectURL } from "./replaceURL.js";
 
@@ -15,24 +14,6 @@ import cookieParser from "cookie-parser"
 
 // Create Express Server
 const app = express();
-
-function parseCookies(request) {
-    const list = {};
-    const cookieHeader = request.headers?.cookie;
-    if (!cookieHeader) return list;
-
-    cookieHeader.split(`;`).forEach(function(cookie) {
-        let [ name, ...rest] = cookie.split(`=`);
-        name = name?.trim();
-        if (!name) return;
-        const value = rest.join(`=`).trim();
-        if (!value) return;
-        list[name] = decodeURIComponent(value);
-    });
-
-    return list;
-}
-
 const INJECTION = '<script src="/injection.js?proxyresource"></script>';
 const CSP = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/;";
 const erudaGoBrr = `(function () {
@@ -46,8 +27,6 @@ const erudaGoBrr = `(function () {
   };
   document.body.appendChild(script);
 })();`
-
-const STATIC_FILE_LOCATION = "/9wioefjlsu09w3ueriofsjd"
 // Configuration
 
 // process.env.PORT is builtin
@@ -56,9 +35,7 @@ const PORT = process.env.PORT;
 const options = {
   changeOrigin: true,
   router(req) {
-    const cookies = parseCookies(req);
-    console.log(cookies)
-    return cookies.baseURL;
+    return getFirst(req.url);
   },
   followRedirects: true,
   selfHandleResponse: true,
@@ -87,29 +64,17 @@ function filter(pathname, req) {
 }
 
 app.use(morgan("dev"));
-app.use(cookieParser())
 
-app.use(STATIC_FILE_LOCATION, express.static("shared"));
-app.use(STATIC_FILE_LOCATION, express.static("static"));
-app.get("/", (req, res, next) => {
-  console.log(req.cookies)
-  if (!req.cookies.baseURL) res.redirect(STATIC_FILE_LOCATION)
-  else next()
-})
+app.use(express.static("shared"));
+app.use(express.static("static"));
+app.use(createProxyMiddleware(filter, options));
 
-app.get("/foo", (req, res) => {
-  res.send(JSON.stringify(req.cookies))
-})
-
-
-app.use(createProxyMiddleware(options));
-
-
-/*app.get("/:url", (req, res) => {
+app.get("/:url", (req, res) => {
   res.send(`URL "${req.params.url}" is not a valid url 
   (or it isn't percent encoded properly). Maybe you should
   go to <a href="/">home</a> instead?`);
-});*/
+});
+
 // Start the Proxy
 app.listen(PORT, () => {
   console.log(`Starting Proxy at port ${PORT}`);
