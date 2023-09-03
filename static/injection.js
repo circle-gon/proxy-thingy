@@ -1,4 +1,4 @@
-import {proxyURL} from "./utils.js?proxyresource"
+import {proxyURL, isValidURL, getFirst} from "./utils.js?proxyresource"
 
 const SERVICE_WORKER_SUPPORT = "serviceWorker" in navigator;
 
@@ -44,9 +44,28 @@ function addSW() {
   });*/
 }
 
+const DOMAIN = window.location.host
+
+function replaceURL(originalURL, currentBase) {
+  const url = new URL(originalURL);
+  //const params = new URLSearchParams(url.search);
+
+  // this is a proxyresource, which should not be altered
+  //if (params.has("proxyresource")) return originalURL;
+  if (url.hostname === DOMAIN) {
+    const basePath = getFirst(url.pathname);
+    if (isValidURL(basePath)) return originalURL;
+    return "https://" + DOMAIN + "/" + encodeURIComponent(currentBase) + url.pathname;
+  } else {
+    //return originalURL
+    return proxyURL(originalURL, DOMAIN);
+  }
+}
+
 function addPageLeave() {
-  window.addEventListener("unload", () => {
-    window.location.href = proxyURL(window.location.href, window.location.origin)
+  window.addEventListener("pagehide", () => {
+    window.location.href = "https://google.com/"
+    //window.location.href = replaceURL(window.location.href, getFirst(window.location.pathname))
   })
 }
 
@@ -55,5 +74,5 @@ window.addEventListener("load", () => {
   addEruda();
 
   if (SERVICE_WORKER_SUPPORT) addSW();
-  addPageLeave()
+  //addPageLeave()
 });

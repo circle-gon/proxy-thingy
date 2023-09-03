@@ -26,15 +26,13 @@ export function getFirst(url) {
 // also less bad code/duplication
 
 // url should start with http vs https based on current page
-export function proxyURL(url, origin) {
+export function proxyURL(url, host) {
   const originGo = new URL(url).origin;
   // default to https, not that it matters anyway
   // if you're using http you have a problem
-  
-  if (originGo === window.location.origin) return url
-  
   return (
-    origin +
+    "https://" +
+    host +
     "/" +
     encodeURIComponent(originGo) +
     // prefer this over url.pathname as it always
