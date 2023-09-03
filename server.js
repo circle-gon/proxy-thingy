@@ -14,7 +14,7 @@ import { fileURLToPath } from "node:url";
 
 // Create Express Server
 const app = express();
-const INJECTION = '<script src="/injection.js?proxyresource"></script>';
+const INJECTION = '<script src="/injection.js?proxyresource" type="module"></script>';
 const CSP = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/;";
 
 // Configuration

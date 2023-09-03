@@ -69,6 +69,7 @@ async function mockClientRequest(request, id) {
       getFirst(new URL(clientURL).pathname)
     );
     console.log(`Proxied url: ${request.url} -> ${newURL}`)
+    console.log(request)
 
     // 3. change the request
     const r = new Request(newURL, request);

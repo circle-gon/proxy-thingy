@@ -1,3 +1,5 @@
+import {proxyURL} from "./utils.js?proxyresource"
+
 const SERVICE_WORKER_SUPPORT = "serviceWorker" in navigator;
 
 if (window.location.href.startsWith("http://")) {
@@ -42,9 +44,16 @@ function addSW() {
   });*/
 }
 
+function addPageLeave() {
+  window.addEventListener("unload", () => {
+    window.location.href = proxyURL(window.location.href, window.location.origin)
+  })
+}
+
 window.addEventListener("load", () => {
   // add eruda da be do be
   addEruda();
 
   if (SERVICE_WORKER_SUPPORT) addSW();
+  addPageLeave()
 });
