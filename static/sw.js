@@ -1,6 +1,4 @@
-//import { getFirst, isValidURL, proxyURL } from "./utils.js?proxyresource";
-
-//const CACHE_KEY = "v0.0.2";
+//import { getFirst, isValidURL, proxyURL } from "./utils.js?proxyresource"
 
 function hasHTTPProtocol(url) {
   return url.startsWith("http://") || url.startsWith("https://");
@@ -27,7 +25,7 @@ function getFirst(url) {
 // also less bad code/duplication
 
 // url should start with http vs https based on current page
-function proxyURL(url, origin) {
+/*function proxyURL(url, origin) {
   const originGo = new URL(url).origin;
   // default to https, not that it matters anyway
   // if you're using http you have a problem
@@ -40,15 +38,9 @@ function proxyURL(url, origin) {
     // starts with /, even if you don't specify it
     url.replace(originGo, "")
   );
-}
+}*/
 
 const DOMAIN = self.location.host;
-
-async function deleteOldCaches() {
-  const keyList = await caches.keys();
-  const cachesToDelete = keyList; //.filter((k) => k !== CACHE_KEY);
-  await Promise.all(cachesToDelete.map((r) => caches.delete(r)));
-}
 
 function replaceURL(originalURL, currentBase) {
   const url = new URL(originalURL);
@@ -61,7 +53,8 @@ function replaceURL(originalURL, currentBase) {
     if (isValidURL(basePath)) return originalURL;
     return "https://" + DOMAIN + "/" + encodeURIComponent(currentBase) + url.pathname;
   } else {
-    return proxyURL(originalURL, DOMAIN);
+    return originalURL
+    //return proxyURL(originalURL, DOMAIN);
   }
 }
 
@@ -88,7 +81,7 @@ async function mockClientRequest(request, id) {
 }
 
 self.addEventListener("activate", (e) => {
-  e.waitUntil(deleteOldCaches());
+  e.waitUntil(clients.claim());
 });
 
 self.addEventListener("fetch", (e) => {

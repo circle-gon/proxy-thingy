@@ -16,17 +16,7 @@ import { fileURLToPath } from "node:url";
 const app = express();
 const INJECTION = '<script src="/injection.js?proxyresource"></script>';
 const CSP = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/;";
-const erudaGoBrr = `(function () {
-  var script = document.createElement("script");
-  script.src = "//cdn.jsdelivr.net/npm/eruda";
-  script.onerror = function (e) {
-    alert("Failed.");
-  };
-  script.onload = function () {
-    eruda.init();
-  };
-  document.body.appendChild(script);
-})();`
+
 // Configuration
 
 // process.env.PORT is builtin
@@ -44,12 +34,12 @@ const options = {
     console.log(
       `target: ${proxyRes.req.protocol}//${proxyRes.req.host}${proxyRes.req.path}`
     );
-    console.log(proxyRes.headers["content-type"]);
+    //console.log(proxyRes.headers["content-type"]);
     if (proxyRes.headers["content-type"]?.includes("text/html")) {
       //res.setHeader("Content-Security-Policy", CSP)
       return resBuffer
         .toString("utf-8")
-        .replace("</body>", "<script>" + erudaGoBrr + "</script></body>");
+        .replace("<head>", "<head>" + INJECTION);
     }
 
     return resBuffer;

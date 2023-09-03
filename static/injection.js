@@ -1,19 +1,45 @@
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js?proxyresource').then(r => {
-      console.log('Service worker registered with scope: ', r.scope);
-      //alert("Success! service worker loaded")
-    }).catch(err => {
-      alert("Failed to register service worker. Reloading page... Reason: " + err.toString())
-    });
-    navigator.serviceWorker.ready.then(() => {
-      //alert("Success! it has loaded")
-    })
-  });
-} else {
-  if (window.location.href.startsWith("http://")) {
-    alert("Page connected to in http, reloading in https...")
-    window.location.href = window.location.href.replace("http://", "https://")
-  }
-  alert("Your browser does not support ServiceWorker, update your browser!")
+const SERVICE_WORKER_SUPPORT = "serviceWorker" in navigator;
+
+if (window.location.href.startsWith("http://")) {
+  alert("Page connected to in http, reloading in https...");
+  window.location.href = window.location.href.replace("http://", "https://");
 }
+if (!SERVICE_WORKER_SUPPORT)
+  alert("Your browser does not support ServiceWorker, update your browser!");
+
+function addEruda() {
+  const script = document.createElement("script");
+  script.src = "//cdn.jsdelivr.net/npm/eruda";
+  script.onerror = function (e) {
+    alert("Failed.");
+  };
+  script.onload = function () {
+    eruda.init();
+  };
+  document.body.appendChild(script);
+}
+
+function addSW() {
+  navigator.serviceWorker
+    .register("/sw.js?proxyresource")
+    .then((r) => {
+      console.log("Service worker registered with scope: ", r.scope);
+      //alert("Success! service worker loaded")
+    })
+    .catch((err) => {
+      alert(
+        "Failed to register service worker. Reason: " +
+          err.toString()
+      );
+    });
+  /*navigator.serviceWorker.ready.then(() => {
+    //alert("Success! it has loaded")
+  });*/
+}
+
+window.addEventListener("load", () => {
+  // add eruda da be do be
+  addEruda()
+  
+  if (SERVICE_WORKER_SUPPORT) addSW()
+});
