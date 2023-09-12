@@ -58,6 +58,12 @@ function replaceURL(originalURL, currentBase) {
   }
 }
 
+function getModifications(req) {
+  const obj = {}
+  if (req.method !== "GET" && req.method !== "HEAD") obj.duplex = "half"
+  return obj
+}
+
 async function mockClientRequest(request, id) {
   // 1. get the url originating the request
   const clientURL = (await self.clients.get(id))?.url;
@@ -72,11 +78,16 @@ async function mockClientRequest(request, id) {
     console.log(request)
 
     // 3. change the request
-    //const r = new Request(newURL, request);
+    
+    // first: add critical stuff
+    const h = new Request(request, getModifications(request))
+    
+    // second: change url
+    const r = new Request(newURL, h);
 
     // 4. return it
 
-    return await fetch(newURL, request);
+    return await fetch(h);
   }
   return await fetch(request);
 }
