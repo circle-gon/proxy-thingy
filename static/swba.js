@@ -83,11 +83,11 @@ async function mockClientRequest(request, id) {
     //const h = new Request(request, getModifications(request))
     
     // second: change url
-    //const r = new Request(newURL, h);
+    const r = new Request(newURL, request);
 
     // 4. return it
 
-    return await fetch(/*r*/ request);
+    return await fetch(r);
   }
   return await fetch(request);
 }
