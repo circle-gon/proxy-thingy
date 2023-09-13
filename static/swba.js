@@ -80,10 +80,10 @@ async function mockClientRequest(request, id) {
     // 3. change the request
     
     // first: add critical stuff
-    //const h = new Request(request, getModifications(request))
+    const h = new Request(request, getModifications(request))
     
     // second: change url
-    const r = new Request(newURL, request);
+    const r = new Request(newURL, h);
 
     // 4. return it
 
