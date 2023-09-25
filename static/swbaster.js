@@ -66,13 +66,13 @@ function getModifications(req) {
 
 async function mockClientRequest(request, id) {
   // 1. get the url originating the request
-  const client = await self.clients.get(id);
+  const clientURL = (await self.clients.get(id))?.url;
 
-  if (client.url) {
+  if (clientURL) {
     // 2. get a new url
     const newURL = replaceURL(
       request.url,
-      getFirst(new URL(client.url).pathname)
+      getFirst(new URL(clientURL).pathname)
     );
     console.log(`Proxied url: ${request.url} -> ${newURL}`)
     console.log(request)
@@ -80,10 +80,11 @@ async function mockClientRequest(request, id) {
     // 3. change the request
     
     // first: add critical stuff
-    //const h = new Request(request, getModifications(request))
+    const modi = getModifications(request)
+    const h = new Request(request, modi)
     
     // second: change url
-    const r = new Request(newURL, request);
+    const r = new Request(newURL, h);
 
     // 4. return it
     
