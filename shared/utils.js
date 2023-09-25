@@ -22,14 +22,9 @@ export function getFirst(url) {
   return decodeURIComponent(slice(url)[0]);
 }
 
-// forcing origin as an option is better because http/https differences
-// also less bad code/duplication
-
-// url should start with http vs https based on current page
 export function proxyURL(url, host) {
   const originGo = new URL(url).origin;
-  // default to https, not that it matters anyway
-  // if you're using http you have a problem
+  // use https because service workers require it & best practice
   return (
     "https://" +
     host +

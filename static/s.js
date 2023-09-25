@@ -64,6 +64,10 @@ function getModifications(req) {
   return obj
 }
 
+function requestToObject(request) {
+  
+}
+
 async function mockClientRequest(request, id) {
   // 1. get the url originating the request
   const clientURL = (await self.clients.get(id))?.url;
@@ -81,6 +85,9 @@ async function mockClientRequest(request, id) {
     
     // first: add critical stuff
     const modi = getModifications(request)
+    
+    console.log(JSON.stringify(modi))
+    
     const h = new Request(request, modi)
     
     // second: change url
