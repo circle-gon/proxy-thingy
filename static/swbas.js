@@ -86,6 +86,8 @@ async function mockClientRequest(request, id) {
     const r = new Request(newURL, h);
 
     // 4. return it
+    
+    console.log(r)
 
     return await fetch(r);
   }
