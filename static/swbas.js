@@ -88,6 +88,7 @@ async function mockClientRequest(request, id) {
     // 4. return it
     
     console.log(r)
+    self.postMessage("")
 
     return await fetch(r);
   }
