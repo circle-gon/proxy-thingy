@@ -1,4 +1,4 @@
-// ARGH 
+// ARGH
 //import { getFirst, isValidURL, proxyURL } from "./utils.js?proxyresource"
 
 function hasHTTPProtocol(url) {
@@ -76,15 +76,15 @@ const REQUEST_KEYS = [
 ];
 
 function requestToObject(request) {
-  const obj = {}
+  const obj = {};
   for (const key of REQUEST_KEYS) {
     if (key === "body") {
-      const method = request.method
-      if (method === "GET" || method === "HEAD") continue
+      const method = request.method;
+      if (method === "GET" || method === "HEAD") continue;
     }
-    obj[key] = request[key]
+    obj[key] = request[key];
   }
-  return obj
+  return obj;
 }
 
 async function mockClientRequest(request, id) {
@@ -107,8 +107,8 @@ async function mockClientRequest(request, id) {
 
     const newRequest = new Request(newURL, {
       ...requestToObject(request),
-      ...modi
-    })
+      ...modi,
+    });
 
     // 4. return it
 
