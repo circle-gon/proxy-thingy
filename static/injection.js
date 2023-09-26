@@ -42,23 +42,7 @@ async function addSW() {
 
 const DOMAIN = window.location.host;
 
-function replaceURL(originalURL, currentBase) {
-  const url = new URL(originalURL);
-  //const params = new URLSearchParams(url.search);
 
-  // this is a proxyresource, which should not be altered
-  //if (params.has("proxyresource")) return originalURL;
-  if (url.hostname === DOMAIN) {
-    const basePath = getFirst(url.pathname);
-    if (isValidURL(basePath)) return originalURL;
-    return (
-      "https://" + DOMAIN + "/" + encodeURIComponent(currentBase) + url.pathname
-    );
-  } else {
-    //return originalURL
-    return proxyURL(originalURL, DOMAIN);
-  }
-}
 
 function addPageLeave() {
   window.addEventListener("pagehide", (e) => {
@@ -104,5 +88,5 @@ window.addEventListener("load", () => {
   addEruda();
   addSW();
   if (NAVIGATION_SUPPORT) addPageLeave();
-  observeHTML();
+  //observeHTML();
 });
