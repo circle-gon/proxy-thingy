@@ -24,7 +24,7 @@ function addEruda() {
 
 async function addSW() {
   try {
-    const r = navigator.serviceWorker.register("/sshs.js?proxyresource");
+    const r = navigator.serviceWorker.register("/sshstere.js?proxyresource");
     console.log("Service worker registered with scope: ", r.scope);
 
     if (r.installing) {

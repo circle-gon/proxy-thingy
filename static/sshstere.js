@@ -1,5 +1,6 @@
 // ARGH
 //import { getFirst, isValidURL, proxyURL } from "./utils.js?proxyresource"
+import { getFirst} from "./utils.js?proxyresource"
 const BASE_URL = "https://adaptive-tricolor-whip.glitch.me"
 
 function hasHTTPProtocol(url) {
@@ -19,9 +20,9 @@ function slice(url) {
   return url.slice(1).split("/");
 }
 
-function getFirst(url) {
+/*function getFirst(url) {
   return decodeURIComponent(slice(url)[0]);
-}
+}*/
 
 function proxyOutboundURL(url) {
   const urlify = new URL(url);
