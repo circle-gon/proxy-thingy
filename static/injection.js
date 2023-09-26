@@ -64,9 +64,11 @@ function replaceURL(originalURL, currentBase) {
 }
 
 function addPageLeave() {
-  navigation.addEventListener("navigate", e => {
+  window.addEventListener("pagehide", e => {
     localStorage.setItem("location", window.location.href)
-    window.location.href = "https://google.com/"
+    setTimeout(() => {
+      localStorage.setItem("foobar", window.location.href)
+    }, 1000)
   })
 }
 
