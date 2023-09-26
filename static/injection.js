@@ -2,6 +2,11 @@ import {proxyURL, isValidURL, getFirst} from "./utils.js?proxyresource"
 
 // Firefox does not support it
 const NAVIGATION_SUPPORT  = "navigation" in window;
+const WATCH_ATTRIBUTES = {
+  a: "href",
+  iframe: "src",
+  object: "data"
+}
 
 function addEruda() {
   const script = document.createElement("script");
@@ -71,15 +76,28 @@ function rewriteStuff(element) {
 
 function observeHTML() {
   const o = new MutationObserver(mutations => {
-    
+    for (const mutation of mutations) {
+      switch (mutation.type) {
+        case "attributes":
+          const element = mutation.target
+          const name = mutation.attributeName
+          if (WATCH_ATTRIBUTES[element] === name) {
+            
+          }
+          break
+        case "childList":
+          break
+        default:
+          throw new TypeError("What? Got " + mutation.type + " instead.")
+      }
+    }
   })
   
   o.observe(document.documentElement, {
     subtree: true,
     childList: true,
     attributes: true,
-    // TODO: do it
-    attributeFilter: []
+    attributeFilter: Object.values(WATCH_ATTRIBUTES)
   })
 }
 
