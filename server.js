@@ -44,6 +44,9 @@ const options = {
 
     return resBuffer;
   }),
+  cookieDomainRewrite: {
+    "*": process.env.PROJECT_DOMAIN
+  },
   pathRewrite(path, req) {
     return slice(path).slice(1).join("/");
   },
