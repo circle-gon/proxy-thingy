@@ -1,14 +1,7 @@
 import {proxyURL, isValidURL, getFirst} from "./utils.js?proxyresource"
 
-const SERVICE_WORKER_SUPPORT = "serviceWorker" in navigator;
+// Firefox does not support it
 const NAVIGATION_SUPPORT  = "navigation" in window;
-
-if (window.location.href.startsWith("http://")) {
-  alert("Page connected to in http, reloading in https...");
-  window.location.href = window.location.href.replace("http://", "https://");
-}
-if (!SERVICE_WORKER_SUPPORT)
-  alert("Your browser does not support ServiceWorker, update your browser!");
 
 function addEruda() {
   const script = document.createElement("script");
@@ -72,10 +65,28 @@ function addPageLeave() {
   })
 }
 
+function rewriteStuff(element) {
+  // TODO: implement
+}
+
+function observeHTML() {
+  const o = new MutationObserver(mutations => {
+    
+  })
+  
+  o.observe(document.documentElement, {
+    subtree: true,
+    childList: true,
+    attributes: true,
+    // TODO: do it
+    attributeFilter: []
+  })
+}
+
 window.addEventListener("load", () => {
   // add eruda da be do be
   addEruda();
-
-  if (SERVICE_WORKER_SUPPORT) addSW();
+  addSW();
   if (NAVIGATION_SUPPORT) addPageLeave()
+  observeHTML()
 });
