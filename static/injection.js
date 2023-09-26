@@ -1,4 +1,4 @@
-import { proxyURL } from "./utils.js?proxyresource";
+import { proxyURL, getFirst } from "./utils.js?proxyresource";
 
 // Firefox does not support it
 const NAVIGATION_SUPPORT = "navigation" in window;
@@ -9,6 +9,7 @@ const WATCH_ATTRIBUTES = {
   link: "href",
   script: "src",
 };
+const currentBase = getFirst(location.pathname)
 
 function addEruda() {
   const script = document.createElement("script");
@@ -24,7 +25,9 @@ function addEruda() {
 
 async function addSW() {
   try {
-    const r = navigator.serviceWorker.register("/sshstere.js?proxyresource");
+    const r = await navigator.serviceWorker.register("/sshsteres.js?proxyresource", {
+      type: "module"
+    });
     console.log("Service worker registered with scope: ", r.scope);
 
     if (r.installing) {
@@ -40,10 +43,6 @@ async function addSW() {
   }
 }
 
-const DOMAIN = window.location.host;
-
-
-
 function addPageLeave() {
   window.addEventListener("pagehide", (e) => {
     localStorage.setItem("location", window.location.href);
@@ -58,13 +57,17 @@ function rewriteStuff(element) {
 }
 
 function observeHTML() {
+  
   const o = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       switch (mutation.type) {
         case "attributes":
           const element = mutation.target;
           const name = mutation.attributeName;
-          if (WATCH_ATTRIBUTES[element] === name) {
+          const value = element.getAttribute(name)
+          if (WATCH_ATTRIBUTES[element] === name && value !) {
+            const newURL = proxyURL(value, currentBase)
+            if (newURL !== value)
           }
           break;
         case "childList":
@@ -88,5 +91,5 @@ window.addEventListener("load", () => {
   addEruda();
   addSW();
   if (NAVIGATION_SUPPORT) addPageLeave();
-  //observeHTML();
+  observeHTML();
 });

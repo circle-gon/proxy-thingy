@@ -16,9 +16,18 @@
       const button = document.getElementById("button");
 
       button.onclick = () => {
+        let hasError = false
         if (isValidURL(input.value)) {
-          window.location.href = proxyURL(input.value);
+          try {
+            window.location.href = proxyURL(input.value);
+          } catch (e) {
+            console.error(e)
+            hasError = true
+          }
         } else {
+          hasError = true
+        }
+        if (hasError) {
           error.innerHTML = "Oops, that is not a valid url. Try again!";
         }
       };

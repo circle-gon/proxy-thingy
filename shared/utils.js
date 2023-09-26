@@ -1,6 +1,6 @@
 // TODO: make this server client angostic
 
-const BASE_URL = "https://adaptive-tricolor-whip.glitch.me"
+const BASE_URL = "https://adaptive-tricolor-whip.glitch.me";
 
 function hasHTTPProtocol(url) {
   return url.startsWith("http://") || url.startsWith("https://");
@@ -25,11 +25,7 @@ export function getFirst(url) {
 
 function proxyOutboundURL(url) {
   const urlify = new URL(url);
-  return (
-    BASE_URL +
-    encodeURIComponent(urlify.origin) +
-    urlify.pathname
-  );
+  return BASE_URL + "/" + encodeURIComponent(urlify.origin) + urlify.pathname;
 }
 
 export function proxyURL(originalURL, currentBase = undefined) {
@@ -37,15 +33,15 @@ export function proxyURL(originalURL, currentBase = undefined) {
   if (url.origin === BASE_URL) {
     const basePath = getFirst(url.pathname);
     if (isValidURL(basePath)) return originalURL;
-    
+
     if (currentBase) {
-    return (
-      BASE_URL + encodeURIComponent(currentBase) + url.pathname
-    );
+      return BASE_URL + "/" + encodeURIComponent(currentBase) + url.pathname;
     } else {
-      throw new TypeError("Absolute url was given, but there is no currentBase")
+      throw new TypeError(
+        "Absolute url was given, but there is no currentBase"
+      );
     }
   } else {
-    return proxyOutboundURL(originalURL)
+    return proxyOutboundURL(originalURL);
   }
 }
