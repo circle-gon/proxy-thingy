@@ -21,10 +21,6 @@ function getFirst(url) {
   return decodeURIComponent(slice(url)[0]);
 }
 
-// forcing origin as an option is better because http/https differences
-// also less bad code/duplication
-
-// url should start with http vs https based on current page
 /*function proxyURL(url, origin) {
   const originGo = new URL(url).origin;
   // default to https, not that it matters anyway
@@ -51,21 +47,47 @@ function replaceURL(originalURL, currentBase) {
   else if (url.hostname === DOMAIN) {
     const basePath = getFirst(url.pathname);
     if (isValidURL(basePath)) return originalURL;
-    return "https://" + DOMAIN + "/" + encodeURIComponent(currentBase) + url.pathname;
+    return (
+      "https://" + DOMAIN + "/" + encodeURIComponent(currentBase) + url.pathname
+    );
   } else {
-    return originalURL
+    return originalURL;
     //return proxyURL(originalURL, DOMAIN);
   }
 }
 
 function getModifications(req) {
-  const obj = {}
-  if (req.method !== "GET" && req.method !== "HEAD") obj.duplex = "half"
-  return obj
+  const obj = {};
+  if (req.method !== "GET" && req.method !== "HEAD") obj.duplex = "half";
+  return obj;
 }
 
+const REQUEST_KEYS = [
+  "method",
+  "headers",
+  "body",
+  "mode",
+  "credentials",
+  "cache",
+  "redirect",
+  "referrer",
+  "referrerPolicy",
+  "integrity",
+  "keepalive",
+  "signal",
+  "priority",
+];
+
 function requestToObject(request) {
-  
+  const obj = {}
+  for (const key of REQUEST_KEYS) {
+    if (key === "body") {
+      const method = request.method
+      if (method === "GET" || method === "HEAD") continue
+    }
+    obj[key] = request[key]
+  }
+  return obj
 }
 
 async function mockClientRequest(request, id) {
@@ -78,26 +100,26 @@ async function mockClientRequest(request, id) {
       request.url,
       getFirst(new URL(clientURL).pathname)
     );
-    console.log(`Proxied url: ${request.url} -> ${newURL}`)
-    console.log(request)
+    console.log(`Proxied url: ${request.url} -> ${newURL}`);
+    console.log(request);
 
     // 3. change the request
-    
+
     // first: add critical stuff
-    const modi = getModifications(request)
-    
-    console.log(JSON.stringify(modi))
-    
-    const h = new Request(request, modi)
-    
-    // second: change url
-    const r = new Request(newURL, h);
+    const modi = getModifications(request);
+
+    console.log(JSON.stringify(modi));
+
+    const newRequest = new Request(newURL, {
+      ...requestToObject(request),
+      ...modi
+    })
 
     // 4. return it
-    
-    console.log(r)
 
-    return await fetch(r);
+    console.log(newRequest);
+
+    return await fetch(newRequest);
   }
   return await fetch(request);
 }
