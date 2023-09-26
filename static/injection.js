@@ -1,6 +1,7 @@
 import {proxyURL, isValidURL, getFirst} from "./utils.js?proxyresource"
 
 const SERVICE_WORKER_SUPPORT = "serviceWorker" in navigator;
+const NAVIGATION_SUPPORT  = "navigation" in window;
 
 if (window.location.href.startsWith("http://")) {
   alert("Page connected to in http, reloading in https...");
@@ -63,10 +64,7 @@ function replaceURL(originalURL, currentBase) {
 }
 
 function addPageLeave() {
-  window.addEventListener("pagehide", () => {
-    window.location.href = "https://google.com/"
-    //window.location.href = replaceURL(window.location.href, getFirst(window.location.pathname))
-  })
+  navigation.addEventListener()
 }
 
 window.addEventListener("load", () => {
@@ -74,5 +72,5 @@ window.addEventListener("load", () => {
   addEruda();
 
   if (SERVICE_WORKER_SUPPORT) addSW();
-  //addPageLeave()
+  if (NAVIGATION_SUPPORT) addPageLeave()
 });
