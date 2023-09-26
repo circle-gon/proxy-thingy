@@ -6,8 +6,6 @@ import {
 } from "http-proxy-middleware";
 import { isValidURL, slice, getFirst } from "./shared/utils.js";
 import { fileURLToPath } from "node:url";
-// import { readFileSync } from "node:fs";
-//import { getCorrectURL } from "./replaceURL.js";
 
 // path to where this file is located, may be used (or not)
 // const __dirname = fileURLToPath(new URL(".", import.meta.url));
@@ -16,11 +14,8 @@ import { fileURLToPath } from "node:url";
 const app = express();
 const INJECTION =
   '<script src="/injection.js?proxyresource" type="module"></script>';
-//const CSP = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net/;";
 
 // Configuration
-
-// process.env.PORT is builtin
 const PORT = process.env.PORT;
 
 const options = {

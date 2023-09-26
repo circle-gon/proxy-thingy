@@ -2,14 +2,13 @@
 
 const BASE_URL = "https://adaptive-tricolor-whip.glitch.me"
 
-export function hasHTTPProtocol(url) {
+function hasHTTPProtocol(url) {
   return url.startsWith("http://") || url.startsWith("https://");
 }
 
 export function isValidURL(test) {
-  let url;
   try {
-    url = new URL(test);
+    new URL(test);
   } catch (e) {
     return false;
   }
@@ -33,24 +32,20 @@ function proxyOutboundURL(url) {
   );
 }
 
-function replaceURL(originalURL, currentBase) {
+export function proxyURL(originalURL, currentBase = undefined) {
   const url = new URL(originalURL);
-  //const params = new URLSearchParams(url.search);
-
-  // this is a proxyresource, which should not be altered
-  //if (params.has("proxyresource")) return originalURL;
   if (url.origin === BASE_URL) {
     const basePath = getFirst(url.pathname);
     if (isValidURL(basePath)) return originalURL;
+    
+    if (currentBase) {
     return (
-      "https://" + DOMAIN + "/" + encodeURIComponent(currentBase) + url.pathname
+      BASE_URL + encodeURIComponent(currentBase) + url.pathname
     );
+    } else {
+      throw new TypeError("Absolute url was given, but there is no currentBase")
+    }
   } else {
-    //return originalURL
     return proxyOutboundURL(originalURL)
   }
-}
-
-export {
-  proxyOutboundURL as proxyURL
 }

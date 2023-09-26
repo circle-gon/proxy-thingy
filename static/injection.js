@@ -1,4 +1,4 @@
-import { proxyURL, isValidURL, getFirst } from "./utils.js?proxyresource";
+import { proxyURL } from "./utils.js?proxyresource";
 
 // Firefox does not support it
 const NAVIGATION_SUPPORT = "navigation" in window;

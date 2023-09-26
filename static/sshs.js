@@ -1,5 +1,6 @@
 // ARGH
 //import { getFirst, isValidURL, proxyURL } from "./utils.js?proxyresource"
+const BASE_URL = "https://adaptive-tricolor-whip.glitch.me"
 
 function hasHTTPProtocol(url) {
   return url.startsWith("http://") || url.startsWith("https://");
@@ -22,35 +23,39 @@ function getFirst(url) {
   return decodeURIComponent(slice(url)[0]);
 }
 
-function proxyURL(url, origin) {
-  const originGo = new URL(url).origin;
+function proxyOutboundURL(url) {
+  const urlify = new URL(url);
   return (
-    "https://" +
-    origin +
-    "/" +
-    encodeURIComponent(originGo) +
-    url.replace(originGo, "")
+    BASE_URL +
+    encodeURIComponent(urlify.origin) +
+    urlify.pathname
   );
 }
 
-const DOMAIN = self.location.host;
+function proxyURL(originalURL, currentBase = undefined) {
+  const url = new URL(originalURL);
+  if (url.origin === BASE_URL) {
+    const basePath = getFirst(url.pathname);
+    if (isValidURL(basePath)) return originalURL;
+    
+    if (currentBase) {
+    return (
+      BASE_URL + encodeURIComponent(currentBase) + url.pathname
+    );
+    } else {
+      throw new TypeError("Absolute url was given, but there is no currentBase")
+    }
+  } else {
+    return proxyOutboundURL(originalURL)
+  }
+}
 
 function replaceURL(originalURL, currentBase) {
-  const url = new URL(originalURL);
-  const params = new URLSearchParams(url.search);
+  const params = new URLSearchParams(new URL(originalURL).search);
 
   // this is a proxyresource, which should not be altered
   if (params.has("proxyresource")) return originalURL;
-  else if (url.hostname === DOMAIN) {
-    const basePath = getFirst(url.pathname);
-    if (isValidURL(basePath)) return originalURL;
-    return (
-      "https://" + DOMAIN + "/" + encodeURIComponent(currentBase) + url.pathname
-    );
-  } else {
-    //return originalURL;
-    return proxyURL(originalURL, DOMAIN);
-  }
+  return proxyURL(originalURL, currentBase)
 }
 
 function getModifications(req) {
