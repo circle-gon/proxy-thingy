@@ -23,7 +23,7 @@ function addEruda() {
 
 function addSW() {
   navigator.serviceWorker
-    .register("/ssh.js?proxyresource")
+    .register("/sshs.js?proxyresource")
     .then((r) => {
       console.log("Service worker registered with scope: ", r.scope);
 
