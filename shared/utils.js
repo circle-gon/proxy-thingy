@@ -1,6 +1,6 @@
 // TODO: make this server client angostic
 
-const BASE_URL = "https://adaptive-tricolor-whip.glitch.me/"
+const BASE_URL = "https://adaptive-tricolor-whip.glitch.me"
 
 export function hasHTTPProtocol(url) {
   return url.startsWith("http://") || url.startsWith("https://");
@@ -25,13 +25,11 @@ export function getFirst(url) {
 }
 
 function proxyOutboundURL(url) {
-  const originGo = new URL(url).origin;
-  // use https because service workers require it & best practice
+  const urlify = new URL(url);
   return (
     BASE_URL +
-    encodeURIComponent(originGo) +
-    // nodejs does not support url.pathname AAAAAAAAAAAAAAA
-    url.replace(originGo, "")
+    encodeURIComponent(urlify.origin) +
+    urlify.pathname
   );
 }
 
