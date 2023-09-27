@@ -12,7 +12,9 @@ const WATCH_ATTRIBUTES = {
   object: "data",
   link: "href",
   script: "src",
-  img: "src"
+  img: "src",
+  input: "src",
+  
 };
 
 function addEruda() {
