@@ -46,3 +46,9 @@ export function proxyAbsoluteURL(originalURL, currentBase = undefined) {
     return proxyOutboundURL(originalURL);
   }
 }
+
+export function proxyWithRelativeURL(originalURL, urlObj) {
+  // this feels so weird but it works!
+  const realURL = new URL(originalURL, urlObj.href).href
+  return proxyAbsoluteURL(originalURL, getFirst(urlObj.pathname))
+}

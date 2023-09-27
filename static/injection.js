@@ -1,4 +1,4 @@
-import { proxyURL, getFirst, isValidURL } from "./utils.js?proxyresource";
+import { proxyWithRelativeURL, isValidURL } from "./utils.js?proxyresource";
 
 // Firefox does not support it
 const NAVIGATION_SUPPORT = "navigation" in window;
@@ -9,7 +9,6 @@ const WATCH_ATTRIBUTES = {
   link: "href",
   script: "src",
 };
-const currentBase = getFirst(location.pathname);
 
 function addEruda() {
   const script = document.createElement("script");
@@ -55,10 +54,6 @@ function addPageLeave() {
   });
 }
 
-function proxyWithShorts(url) {
-  const 
-}
-
 function setURL(element, name) {
   const value = element.getAttribute(name);
   if (
@@ -67,7 +62,7 @@ function setURL(element, name) {
     value !== null &&
     isValidURL(value)
   ) {
-    const newURL = proxyURL(value, currentBase);
+    const newURL = proxyWithRelativeURL(value, location);
     // don't cause an infinite loop
     if (newURL !== value) {
       element.setAttribute(name, newURL);
@@ -120,5 +115,6 @@ window.addEventListener("load", () => {
   addEruda();
   addSW();
   if (NAVIGATION_SUPPORT) addPageLeave();
-  observeHTML();
+  //observeHTML();
+  bulkSet(document.documentElement)
 });
