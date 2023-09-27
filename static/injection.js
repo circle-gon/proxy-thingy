@@ -1,4 +1,4 @@
-import { proxyURL, getFirst } from "./utils.js?proxyresource";
+import { proxyURL, getFirst, isValidURL } from "./utils.js?proxyresource";
 
 // Firefox does not support it
 const NAVIGATION_SUPPORT = "navigation" in window;
@@ -9,7 +9,7 @@ const WATCH_ATTRIBUTES = {
   link: "href",
   script: "src",
 };
-const currentBase = getFirst(location.pathname)
+const currentBase = getFirst(location.pathname);
 
 function addEruda() {
   const script = document.createElement("script");
@@ -25,9 +25,12 @@ function addEruda() {
 
 async function addSW() {
   try {
-    const r = await navigator.serviceWorker.register("/sshsteres.js?proxyresource", {
-      type: "module"
-    });
+    const r = await navigator.serviceWorker.register(
+      "/sshsteres.js?proxyresource",
+      {
+        type: "module",
+      }
+    );
     console.log("Service worker registered with scope: ", r.scope);
 
     if (r.installing) {
@@ -56,21 +59,41 @@ function rewriteStuff(element) {
   // TODO: implement
 }
 
-function observeHTML() {
+function setURL(element, name) {
+  const value = element.getAttribute(name);
+  if (
+    WATCH_ATTRIBUTES[element] === name &&
+    value !== null &&
+    isValidURL(value)
+  ) {
+    const newURL = proxyURL(value, currentBase);
+    // don't cause an infinite loop
+    if (newURL !== value) {
+      element.setAttribute(name, newURL);
+    }
+  }
+}
+
+function bulkSet(node) {
+  const attrToModify = WATCH_ATTRIBUTES[node.nodeName]
+  if (attrToModify) {
+    setURL(element, attrToModify)
+  }
   
+  for (const node of )
+}
+
+function observeHTML() {
   const o = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       switch (mutation.type) {
         case "attributes":
-          const element = mutation.target;
-          const name = mutation.attributeName;
-          const value = element.getAttribute(name)
-          if (WATCH_ATTRIBUTES[element] === name && value !) {
-            const newURL = proxyURL(value, currentBase)
-            if (newURL !== value)
-          }
+          setURL(mutation.target, mutation.attributeName)
           break;
         case "childList":
+          for (const node of mutation.addedNodes) {
+            
+          }
           break;
         default:
           throw new TypeError("What? Got " + mutation.type + " instead.");
