@@ -55,8 +55,8 @@ function addPageLeave() {
   });
 }
 
-function proxyWithRelative(url) {
-  if (url.startsWith(""))
+function proxyWithShorts(url) {
+  const 
 }
 
 function setURL(element, name) {

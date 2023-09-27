@@ -1,11 +1,11 @@
-import { getFirst, proxyURL } from "./utils.js?proxyresource"
+import { getFirst, proxyAbsoluteURL } from "./utils.js?proxyresource"
 
 function replaceURL(originalURL, currentBase) {
   const params = new URLSearchParams(new URL(originalURL).search);
   
   // this is a proxyresource, which should not be altered
   if (params.has("proxyresource")) return originalURL;
-  return proxyURL(originalURL, currentBase)
+  return proxyAbsoluteURL(originalURL, currentBase)
 }
 
 function getModifications(req) {
