@@ -1,4 +1,8 @@
-import { getFirst, proxyAbsoluteURL, isValidURL } from "./utils.js?proxyresource";
+import {
+  getFirst,
+  proxyAbsoluteURL,
+  isValidURL,
+} from "./utils.js?proxyresource";
 
 // Firefox does not support it
 const NAVIGATION_SUPPORT = "navigation" in window;
@@ -8,6 +12,7 @@ const WATCH_ATTRIBUTES = {
   object: "data",
   link: "href",
   script: "src",
+  img: "src"
 };
 
 function addEruda() {
@@ -54,57 +59,52 @@ function addPageLeave() {
   });
 }
 
-
 function proxyWithRelativeURL(originalURL) {
   // this feels so weird but it works!
-  const realURL = new URL(originalURL, location.href).href
-  return proxyAbsoluteURL(realURL, getFirst(location.pathname))
+  const realURL = new URL(originalURL, location.href).href;
+  return proxyAbsoluteURL(realURL, getFirst(location.pathname));
 }
 
-window.bulkSet = bulkSet
+function getAttrForElement(element) {
+  return WATCH_ATTRIBUTES[element.nodeName.toLowerCase()]
+}
 
-function setURL(element, name) {
+window.bulkSet = bulkSet;
+
+function setURL(element) {
+  const name = getAttrForElement(element);
+  if (name === undefined) return;
+
   const value = element.getAttribute(name);
-  if (
-    // nodeName === tagName
-    WATCH_ATTRIBUTES[element.nodeName.toLowerCase()] === name &&
-    value !== null &&
-    isValidURL(value)
-  ) {
-    const newURL = proxyWithRelativeURL(value);
-    // don't cause an infinite loop
-    if (newURL !== value) {
-      element.setAttribute(name, newURL);
-    }
+  if (value === null) return;
+  
+  const newURL = proxyWithRelativeURL(value);
+  // don't cause an infinite loop
+  if (newURL !== value) {
+    element.setAttribute(name, newURL);
   }
 }
 
 function bulkSet(element) {
-  const attrToModify = WATCH_ATTRIBUTES[element.nodeName.toLowerCase()]
-  if (attrToModify) {
-    console.log("Triggered", element.nodeName, attrToModify)
-    setURL(element, attrToModify)
-  }
-  
-  //console.log(element)
-  for (const childElement of (element.children ?? [])) {
-    bulkSet(childElement)
+  setURL(element);
+
+  for (const childElement of element.children ?? []) {
+    bulkSet(childElement);
   }
 }
 
 function observeHTML() {
-  bulkSet(document.documentElement)
-  
+  bulkSet(document.documentElement);
+
   const o = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       switch (mutation.type) {
         case "attributes":
-          setURL(mutation.target, mutation.attributeName)
+          const target = mutation.target
+          if (getAttrForElement(target) === mutation.attributeName) setURL(target);
           break;
         case "childList":
-          for (const element of mutation.addedNodes) {
-            bulkSet(element)
-          }
+          for (const element of mutation.addedNodes) bulkSet(element);
           break;
         default:
           throw new TypeError("What? Got " + mutation.type + " instead.");
@@ -125,6 +125,5 @@ window.addEventListener("load", () => {
   addEruda();
   addSW();
   if (NAVIGATION_SUPPORT) addPageLeave();
-  //observeHTML();
-  bulkSet(document.documentElement)
+  observeHTML();
 });
