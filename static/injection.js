@@ -55,14 +55,15 @@ function addPageLeave() {
   });
 }
 
-function rewriteStuff(element) {
-  // TODO: implement
+function proxyWithRelative(url) {
+  if (url.startsWith(""))
 }
 
 function setURL(element, name) {
   const value = element.getAttribute(name);
   if (
-    WATCH_ATTRIBUTES[element] === name &&
+    // nodeName === tagName
+    WATCH_ATTRIBUTES[element.nodeName.toLowerCase()] === name &&
     value !== null &&
     isValidURL(value)
   ) {
@@ -74,16 +75,21 @@ function setURL(element, name) {
   }
 }
 
-function bulkSet(node) {
-  const attrToModify = WATCH_ATTRIBUTES[node.nodeName]
+function bulkSet(element) {
+  const attrToModify = WATCH_ATTRIBUTES[element.nodeName.toLowerCase()]
   if (attrToModify) {
     setURL(element, attrToModify)
   }
   
-  for (const node of )
+  console.log(element)
+  for (const childElement of element.children) {
+    bulkSet(childElement)
+  }
 }
 
 function observeHTML() {
+  bulkSet(document.documentElement)
+  
   const o = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       switch (mutation.type) {
@@ -91,8 +97,8 @@ function observeHTML() {
           setURL(mutation.target, mutation.attributeName)
           break;
         case "childList":
-          for (const node of mutation.addedNodes) {
-            
+          for (const element of mutation.addedNodes) {
+            bulkSet(element)
           }
           break;
         default:
