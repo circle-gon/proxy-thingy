@@ -1,4 +1,4 @@
-import { proxyWithRelativeURL, isValidURL } from "./utils.js?proxyresource";
+import { getFirst, proxyAbsoluteURL, isValidURL } from "./utils.js?proxyresource";
 
 // Firefox does not support it
 const NAVIGATION_SUPPORT = "navigation" in window;
@@ -54,6 +54,15 @@ function addPageLeave() {
   });
 }
 
+
+function proxyWithRelativeURL(originalURL) {
+  // this feels so weird but it works!
+  const realURL = new URL(originalURL, location.href).href
+  return proxyAbsoluteURL(realURL, getFirst(location.pathname))
+}
+
+window.bulkSet = bulkSet
+
 function setURL(element, name) {
   const value = element.getAttribute(name);
   if (
@@ -62,7 +71,7 @@ function setURL(element, name) {
     value !== null &&
     isValidURL(value)
   ) {
-    const newURL = proxyWithRelativeURL(value, location);
+    const newURL = proxyWithRelativeURL(value);
     // don't cause an infinite loop
     if (newURL !== value) {
       element.setAttribute(name, newURL);
@@ -73,11 +82,12 @@ function setURL(element, name) {
 function bulkSet(element) {
   const attrToModify = WATCH_ATTRIBUTES[element.nodeName.toLowerCase()]
   if (attrToModify) {
+    console.log("Triggered", element.nodeName, attrToModify)
     setURL(element, attrToModify)
   }
   
-  console.log(element)
-  for (const childElement of element.children) {
+  //console.log(element)
+  for (const childElement of (element.children ?? [])) {
     bulkSet(childElement)
   }
 }

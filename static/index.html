@@ -10,7 +10,7 @@
     <input type="text" id="go" /><button id="button">Go!</button><br />
     <span id="error" style="color: red"></span>
     <script type="module">
-      import { isValidURL, proxyURL } from "/utils.js?proxyresource";
+      import { isValidURL, proxyAbsoluteURL } from "/utils.js?proxyresource";
       const input = document.getElementById("go");
       const error = document.getElementById("error");
       const button = document.getElementById("button");
@@ -19,7 +19,7 @@
         let hasError = false
         if (isValidURL(input.value)) {
           try {
-            window.location.href = proxyURL(input.value);
+            window.location.href = proxyAbsoluteURL(input.value);
           } catch (e) {
             console.error(e)
             hasError = true
