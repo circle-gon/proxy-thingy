@@ -7,15 +7,19 @@ import {
 // Firefox does not support it
 const NAVIGATION_SUPPORT = "navigation" in window;
 const WATCH_ATTRIBUTES = {
-  a: "href",
-  iframe: "src",
-  object: "data",
-  link: "href",
-  script: "src",
-  img: "src",
-  input: "src",
-  
+  ...createMass("href", ["base", "a", "area", "link"]),
+  ...createMass("action", ["form"]),
+  ...createMass("cite", ["blockquote", "del", "ins", "q"]),
+  ...createMass("data", ["object"]),
+  ...createMass("formaction", ["button", "input"]),
+  ...createMass("src", [])
 };
+
+const watchAttrs = [...new Set(Object.values(WATCH_ATTRIBUTES))]
+
+function createMass(id, elements) {
+  return Object.fromEntries(elements.map(i => [i, id]))
+}
 
 function addEruda() {
   const script = document.createElement("script");
@@ -118,7 +122,7 @@ function observeHTML() {
     subtree: true,
     childList: true,
     attributes: true,
-    attributeFilter: Object.values(WATCH_ATTRIBUTES),
+    attributeFilter: watchAttrs,
   });
 }
 
