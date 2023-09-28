@@ -82,9 +82,33 @@ async function addSW() {
   }
 }
 
+function utilMessage(e) {
+  if (location.origin !== e.origin) {
+      console.log("Recieved message from a different origin: " + e.origin)
+    } else {
+      const data = e.data
+      switch (data.type) {
+        case M.FETCH:
+          
+          break
+        default:
+          console.log("Recieved bad message", data)
+      }
+    }
+}
+
+window.thingies = []
+
 async function swListen() {
-  const registration = await navigator.serviceWorker.ready
-  
+  navigator.serviceWorker.startMessages()
+  navigator.serviceWorker.addEventListener("message", e => {
+    switch (e.)
+  })
+  const registration = (await navigator.serviceWorker.ready).active
+  registration.postMessage({
+    type: M.FETCH,
+    data: "foobar"
+  })
 }
 
 function attachListeners() {
