@@ -12,7 +12,8 @@ const WATCH_ATTRIBUTES = {
   ...createMass("cite", ["blockquote", "del", "ins", "q"]),
   ...createMass("data", ["object"]),
   ...createMass("formaction", ["button", "input"]),
-  ...createMass("src", ["audio", "embed", "iframe", "img", "input", "script", "source", "track", "video"])
+  ...createMass("src", ["audio", "embed", "iframe", "img", "input", "script", "source", "track", "video"]),
+  ...createMass("poster", ["video"])
 };
 
 const GLOBAL_ATTRIBUTES = ["itemid", "item"]
