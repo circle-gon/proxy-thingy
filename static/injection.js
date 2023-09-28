@@ -61,7 +61,7 @@ function addEruda() {
 async function addSW() {
   try {
     const r = await navigator.serviceWorker.register(
-      "/s.js?proxyresource",
+      "/sh.js?proxyresource",
       {
         type: "module",
       }
