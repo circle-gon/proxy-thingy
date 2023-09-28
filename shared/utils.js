@@ -26,7 +26,7 @@ export function getFirst(url) {
 
 function proxyOutboundURL(url) {
   const urlify = new URL(url);
-  return BASE_URL + encodeURIComponent(urlify.origin) + urlify.pathname + url.search;
+  return BASE_URL + encodeURIComponent(urlify.origin) + urlify.pathname + urlify.search;
 }
 
 export function proxyAbsoluteURL(originalURL, currentBase = undefined) {

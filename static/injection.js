@@ -48,7 +48,7 @@ function mergeAttrs(...attrs) {
 
 function addEruda() {
   const script = document.createElement("script");
-  script.src = "//cdn.jsdelivr.net/npm/eruda";
+  script.src = "https://cdn.jsdelivr.net/npm/eruda";
   script.onerror = function (e) {
     alert("Failed.");
   };
@@ -61,7 +61,7 @@ function addEruda() {
 async function addSW() {
   try {
     const r = await navigator.serviceWorker.register(
-      "/sshsteres.js?proxyresource",
+      "/s.js?proxyresource",
       {
         type: "module",
       }
@@ -182,10 +182,11 @@ function observeHTML() {
   });
 }
 
-window.addEventListener("load", () => {
-  // add eruda da be do be
+function init() {
   addEruda();
   Promise.all([addSW(), swListen()]).catch(console.error);
   if (NAVIGATION_SUPPORT) addPageLeave();
   observeHTML();
-});
+}
+
+init()
