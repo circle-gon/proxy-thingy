@@ -76,12 +76,15 @@ async function addSW() {
       console.log("Service worker active");
     }
     
-    attachListeners()
-    
   } catch (e) {
     console.error(e);
     alert("Failed to register service worker. Reason: " + e.toString());
   }
+}
+
+async function swListen() {
+  const registration = await navigator.serviceWorker.ready
+  
 }
 
 function attachListeners() {
