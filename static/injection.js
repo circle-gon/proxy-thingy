@@ -12,8 +12,10 @@ const WATCH_ATTRIBUTES = {
   ...createMass("cite", ["blockquote", "del", "ins", "q"]),
   ...createMass("data", ["object"]),
   ...createMass("formaction", ["button", "input"]),
-  ...createMass("src", [])
+  ...createMass("src", ["audio", "embed", "iframe", "img", "input", "script", "source", "track", "video"])
 };
+
+const GLOBAL_ATTRIBUTES = ["itemid", "item"]
 
 const watchAttrs = [...new Set(Object.values(WATCH_ATTRIBUTES))]
 
@@ -82,9 +84,9 @@ function setURL(element) {
   if (name === undefined) return;
 
   const value = element.getAttribute(name);
-  if (value === null) return;
+  if (value === null || value === "") return;
   
-  const newURL = proxyWithRelativeURL(value);
+  const newURL = proxyWithRelativeURL(value.trim());
   // don't cause an infinite loop
   if (newURL !== value) {
     element.setAttribute(name, newURL);
