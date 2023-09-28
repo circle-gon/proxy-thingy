@@ -2,6 +2,7 @@ import {
   getFirst,
   proxyAbsoluteURL,
   isValidURL,
+  MESSAGE_TYPES as M
 } from "./utils.js?proxyresource";
 
 // Firefox does not support it
@@ -52,7 +53,7 @@ function addEruda() {
     alert("Failed.");
   };
   script.onload = function () {
-    eruda.init();
+    window.eruda.init();
   };
   document.body.appendChild(script);
 }
@@ -74,10 +75,30 @@ async function addSW() {
     } else if (r.active) {
       console.log("Service worker active");
     }
+    
+    attachListeners()
+    
   } catch (e) {
     console.error(e);
     alert("Failed to register service worker. Reason: " + e.toString());
   }
+}
+
+function attachListeners() {
+  navigator.serviceWorker.addEventListener("message", e => {
+    if (location.origin !== e.origin) {
+      console.log("Recieved message from a different origin: " + e.origin)
+    } else {
+      const data = e.data
+      switch (data.type) {
+        case M.FETCH:
+          
+          break
+        default:
+          console.log("Recieved bad message", data)
+      }
+    }
+  })
 }
 
 function addPageLeave() {

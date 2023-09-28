@@ -1,4 +1,4 @@
-import { getFirst, proxyAbsoluteURL } from "./utils.js?proxyresource"
+import { getFirst, proxyAbsoluteURL, MESSAGE_TYPES as M } from "./utils.js?proxyresource"
 
 function replaceURL(originalURL, currentBase) {
   const params = new URLSearchParams(new URL(originalURL).search);
@@ -44,30 +44,28 @@ function requestToObject(request) {
 
 async function mockClientRequest(request, id) {
   // 1. get the url originating the request
-  const clientURL = (await self.clients.get(id))?.url;
+  const client = await self.clients.get(id);
 
-  if (clientURL) {
-    // 2. get a new url
+  if (client) {
     const newURL = replaceURL(
       request.url,
-      getFirst(new URL(clientURL).pathname)
+      getFirst(new URL(client.url).pathname)
     );
-    console.log(`Proxied url: ${request.url} -> ${newURL}`);
-    console.log(request);
+    
+    client.postMessage({
+      type: M.FETCH,
+      data: {
+        oldURL: request.url,
+        newURL: newURL
+      }
+    })
 
-    // 3. change the request
     const modi = getModifications(request);
-
-    console.log(JSON.stringify(modi));
 
     const newRequest = new Request(newURL, {
       ...requestToObject(request),
       ...modi,
     });
-
-    // 4. return it
-
-    console.log(newRequest);
 
     return await fetch(newRequest);
   }
@@ -75,7 +73,7 @@ async function mockClientRequest(request, id) {
 }
 
 self.addEventListener("activate", (e) => {
-  e.waitUntil(clients.claim());
+  e.waitUntil(self.clients.claim());
 });
 
 self.addEventListener("fetch", (e) => {

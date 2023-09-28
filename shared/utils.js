@@ -46,3 +46,9 @@ export function proxyAbsoluteURL(originalURL, currentBase = undefined) {
     return proxyOutboundURL(originalURL);
   }
 }
+
+// an enum of sorts
+
+export const MESSAGE_TYPES = Object.freeze({
+  FETCH: 0
+})
