@@ -92,8 +92,8 @@ function proxyWithRelativeURL(originalURL) {
 }
 
 function getAttrsForElement(element) {
-  const name = element.nodeName.toLowerCase()
-  const base = WATCH_ATTRIBUTES[name] ?? []
+  if (!(element instanceof Element)) return []
+  const base = WATCH_ATTRIBUTES[element.nodeName.toLowerCase()] ?? []
   return [...GLOBAL_ATTRIBUTES, ...base];
 }
 
