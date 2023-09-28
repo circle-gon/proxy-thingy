@@ -2,7 +2,7 @@ import {
   getFirst,
   proxyAbsoluteURL,
   isValidURL,
-  MESSAGE_TYPES as M
+  MESSAGE_TYPES as M,
 } from "./utils.js?proxyresource";
 
 // Firefox does not support it
@@ -29,9 +29,9 @@ const WATCH_ATTRIBUTES = mergeAttrs(
   ["poster", "video"],
   ["ping", "a", "area"]
 );
-const BULK_ATTRIBUTES = ["ping", "itemtype"]
+const BULK_ATTRIBUTES = ["ping", "itemtype"];
 const GLOBAL_ATTRIBUTES = ["itemid", "itemtype"];
-const WHITESPACE_SPLITTER = /\s/g
+const WHITESPACE_SPLITTER = /\s/g;
 
 const watchAttrs = [...new Set(Object.values(WATCH_ATTRIBUTES))];
 
@@ -75,62 +75,41 @@ async function addSW() {
     } else if (r.active) {
       console.log("Service worker active");
     }
-    
   } catch (e) {
     console.error(e);
     alert("Failed to register service worker. Reason: " + e.toString());
   }
 }
 
-function utilMessage(e) {
-  if (location.origin !== e.origin) {
-      console.log("Recieved message from a different origin: " + e.origin)
+function utilMessage(func) {
+  return function (e) {
+    if (location.origin !== e.origin) {
+      console.log("Recieved message from a different origin: " + e.origin);
     } else {
-      const data = e.data
-      switch (data.type) {
-        case M.FETCH:
-          
-          break
-        default:
-          console.log("Recieved bad message", data)
-      }
+      func(e.data);
     }
+  };
 }
 
-window.thingies = []
+window.thingies = [];
 
 async function swListen() {
-  navigator.serviceWorker.startMessages()
-  navigator.serviceWorker.addEventListener("message", e => {
-    switch (e.)
-  })
-  const registration = (await navigator.serviceWorker.ready).active
+  navigator.serviceWorker.startMessages();
+  navigator.serviceWorker.addEventListener(
+    "message",
+    utilMessage((data) => {
+      thingies.push(data);
+    })
+  );
+  const registration = (await navigator.serviceWorker.ready).active;
   registration.postMessage({
     type: M.FETCH,
-    data: "foobar"
-  })
-}
-
-function attachListeners() {
-  navigator.serviceWorker.addEventListener("message", e => {
-    if (location.origin !== e.origin) {
-      console.log("Recieved message from a different origin: " + e.origin)
-    } else {
-      const data = e.data
-      switch (data.type) {
-        case M.FETCH:
-          
-          break
-        default:
-          console.log("Recieved bad message", data)
-      }
-    }
-  })
+    data: "foobar",
+  });
 }
 
 function addPageLeave() {
-  window.addEventListener("pagehide", (e) => {
-  });
+  window.addEventListener("pagehide", (e) => {});
 }
 
 function proxyWithRelativeURL(originalURL) {
@@ -140,8 +119,8 @@ function proxyWithRelativeURL(originalURL) {
 }
 
 function getAttrsForElement(element) {
-  if (!(element instanceof Element)) return []
-  const base = WATCH_ATTRIBUTES[element.nodeName.toLowerCase()] ?? []
+  if (!(element instanceof Element)) return [];
+  const base = WATCH_ATTRIBUTES[element.nodeName.toLowerCase()] ?? [];
   return [...GLOBAL_ATTRIBUTES, ...base];
 }
 
@@ -150,10 +129,10 @@ function setURL(element, name) {
   if (value === null || value === "") return;
 
   // TODO: preserve original format
-  const isBulk = BULK_ATTRIBUTES.includes(name)
-  const urls = isBulk ? value.split(WHITESPACE_SPLITTER) : [value.trim()]
-  
-  const newURL = urls.map(url => proxyWithRelativeURL(url)).join(" ");
+  const isBulk = BULK_ATTRIBUTES.includes(name);
+  const urls = isBulk ? value.split(WHITESPACE_SPLITTER) : [value.trim()];
+
+  const newURL = urls.map((url) => proxyWithRelativeURL(url)).join(" ");
   // don't cause an infinite loop
   if (newURL !== value) {
     element.setAttribute(name, newURL);
@@ -161,7 +140,7 @@ function setURL(element, name) {
 }
 
 function setURLs(element) {
-  for (const name of getAttrsForElement(element)) setURL(element, name)
+  for (const name of getAttrsForElement(element)) setURL(element, name);
 }
 
 function bulkSet(element) {
@@ -172,7 +151,7 @@ function bulkSet(element) {
   }
 }
 
-window.bs = bulkSet
+window.bs = bulkSet;
 
 function observeHTML() {
   bulkSet(document.documentElement);
@@ -182,7 +161,7 @@ function observeHTML() {
       switch (mutation.type) {
         case "attributes":
           const target = mutation.target;
-          const attrName = mutation.attributeName
+          const attrName = mutation.attributeName;
           if (getAttrsForElement(target).includes(attrName))
             setURL(target, attrName);
           break;
@@ -206,7 +185,7 @@ function observeHTML() {
 window.addEventListener("load", () => {
   // add eruda da be do be
   addEruda();
-  addSW();
+  Promise.all([addSW(), swListen()]).catch(console.error);
   if (NAVIGATION_SUPPORT) addPageLeave();
   observeHTML();
 });
