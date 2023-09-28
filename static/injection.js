@@ -7,26 +7,42 @@ import {
 // Firefox does not support it
 const NAVIGATION_SUPPORT = "navigation" in window;
 const WATCH_ATTRIBUTES = mergeAttrs(
-  ["href", ["base", "a", "area", "link"]],
-  ["action", ["form"]],
-  ["cite", ["blockquote", "del", "ins", "q"]],
-  ["data", ["object"]],
-  ["formaction", ["button", "input"]],
-  ["src", ["audio", "embed", "iframe", "img", "input", "script", "source", "track", "video"]],
-  ["poster", ["video"]]
-)
+  // ID, ...elements
+  ["href", "base", "a", "area", "link"],
+  ["action", "form"],
+  ["cite", "blockquote", "del", "ins", "q"],
+  ["data", "object"],
+  ["formaction", "button", "input"],
+  [
+    "src",
+    "audio",
+    "embed",
+    "iframe",
+    "img",
+    "input",
+    "script",
+    "source",
+    "track",
+    "video",
+  ],
+  ["poster", "video"],
+  ["ping", "a", "area"]
+);
 
-const GLOBAL_ATTRIBUTES = ["itemid", "item"]
+const BULK_ATTRIBUTES = ["ping", "itemtype"]
+const GLOBAL_ATTRIBUTES = ["itemid", "itemtype"];
 
-const watchAttrs = [...new Set(Object.values(WATCH_ATTRIBUTES))]
-
+const watchAttrs = [...new Set(Object.values(WATCH_ATTRIBUTES))];
 
 function mergeAttrs(...attrs) {
-  const obj = {}
+  const obj = {};
   for (const attrArr of attrs) {
-    const id =
+    const id = attrArr[0];
+    for (const elems of attrArr.slice(1)) {
+      obj[elems] = [...(obj[elems] ?? []), id];
+    }
   }
-  return obj
+  return obj;
 }
 
 function addEruda() {
@@ -79,18 +95,16 @@ function proxyWithRelativeURL(originalURL) {
   return proxyAbsoluteURL(realURL, getFirst(location.pathname));
 }
 
-function getAttrForElement(element) {
-  return WATCH_ATTRIBUTES[element.nodeName.toLowerCase()]
+function getAttrsForElement(element) {
+  return WATCH_ATTRIBUTES[element.nodeName.toLowerCase()].concat(GLOBAL_ATTRIBUTES);
 }
 
-window.w = WATCH_ATTRIBUTES
-
-function setURL(element) {
-  const name = getAttrForElement(element);
-  if (name === undefined) return;
-
+function setURL(element, name) {
   const value = element.getAttribute(name);
   if (value === null || value === "") return;
+
+  const isBulk = BULK_ATTRIBUTES.includes(name)
+  const urls = 
   
   const newURL = proxyWithRelativeURL(value.trim());
   // don't cause an infinite loop
@@ -99,8 +113,14 @@ function setURL(element) {
   }
 }
 
+function setURLs(element) {
+  const names = getAttrsForElement(element);
+  if (names === undefined) return;
+  for (const name of names) setURL(element, name)
+}
+
 function bulkSet(element) {
-  setURL(element);
+  setURLs(element);
 
   for (const childElement of element.children ?? []) {
     bulkSet(childElement);
@@ -114,8 +134,10 @@ function observeHTML() {
     for (const mutation of mutations) {
       switch (mutation.type) {
         case "attributes":
-          const target = mutation.target
-          if (getAttrForElement(target) === mutation.attributeName) setURL(target);
+          const target = mutation.target;
+          const attrName = mutation.attributeName
+          if (getAttrsForElement(target).includes(attrName))
+            setURL(target, attrName);
           break;
         case "childList":
           for (const element of mutation.addedNodes) bulkSet(element);
