@@ -26,7 +26,7 @@ export function getFirst(url) {
 
 function proxyOutboundURL(url) {
   const urlify = new URL(url);
-  return BASE_URL + encodeURIComponent(urlify.origin) + urlify.pathname;
+  return BASE_URL + encodeURIComponent(urlify.origin) + urlify.pathname + url.search;
 }
 
 export function proxyAbsoluteURL(originalURL, currentBase = undefined) {
@@ -36,7 +36,7 @@ export function proxyAbsoluteURL(originalURL, currentBase = undefined) {
     if (isValidURL(basePath)) return originalURL;
 
     if (currentBase) {
-      return BASE_URL + encodeURIComponent(currentBase) + url.pathname;
+      return BASE_URL + encodeURIComponent(currentBase) + url.pathname + url.search;
     } else {
       throw new TypeError(
         "Absolute url was given, but there is no currentBase"

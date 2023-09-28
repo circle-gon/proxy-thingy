@@ -1,7 +1,7 @@
 import { getFirst, proxyAbsoluteURL, MESSAGE_TYPES as M } from "./utils.js?proxyresource"
 
 function replaceURL(originalURL, currentBase) {
-  const params = new URLSearchParams(new URL(originalURL).search);
+  const params = new URL(originalURL).searchParams;
   
   // this is a proxyresource, which should not be altered
   if (params.has("proxyresource")) return originalURL;
