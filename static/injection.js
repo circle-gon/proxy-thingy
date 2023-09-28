@@ -28,9 +28,9 @@ const WATCH_ATTRIBUTES = mergeAttrs(
   ["poster", "video"],
   ["ping", "a", "area"]
 );
-
 const BULK_ATTRIBUTES = ["ping", "itemtype"]
 const GLOBAL_ATTRIBUTES = ["itemid", "itemtype"];
+const WHITESPACE_SPLITTER = /\s/g
 
 const watchAttrs = [...new Set(Object.values(WATCH_ATTRIBUTES))];
 
@@ -82,10 +82,6 @@ async function addSW() {
 
 function addPageLeave() {
   window.addEventListener("pagehide", (e) => {
-    localStorage.setItem("location", window.location.href);
-    setTimeout(() => {
-      localStorage.setItem("foobar", window.location.href);
-    }, 1000);
   });
 }
 
@@ -96,17 +92,20 @@ function proxyWithRelativeURL(originalURL) {
 }
 
 function getAttrsForElement(element) {
-  return WATCH_ATTRIBUTES[element.nodeName.toLowerCase()].concat(GLOBAL_ATTRIBUTES);
+  const name = element.nodeName.toLowerCase()
+  const base = WATCH_ATTRIBUTES[name] ?? []
+  return [...GLOBAL_ATTRIBUTES, ...base];
 }
 
 function setURL(element, name) {
   const value = element.getAttribute(name);
   if (value === null || value === "") return;
 
+  // TODO: preserve original format
   const isBulk = BULK_ATTRIBUTES.includes(name)
-  const urls = 
+  const urls = isBulk ? value.split(WHITESPACE_SPLITTER) : [value.trim()]
   
-  const newURL = proxyWithRelativeURL(value.trim());
+  const newURL = urls.map(url => proxyWithRelativeURL(url)).join(" ");
   // don't cause an infinite loop
   if (newURL !== value) {
     element.setAttribute(name, newURL);
@@ -114,9 +113,7 @@ function setURL(element, name) {
 }
 
 function setURLs(element) {
-  const names = getAttrsForElement(element);
-  if (names === undefined) return;
-  for (const name of names) setURL(element, name)
+  for (const name of getAttrsForElement(element)) setURL(element, name)
 }
 
 function bulkSet(element) {
@@ -126,6 +123,8 @@ function bulkSet(element) {
     bulkSet(childElement);
   }
 }
+
+window.bs = bulkSet
 
 function observeHTML() {
   bulkSet(document.documentElement);
