@@ -6,22 +6,27 @@ import {
 
 // Firefox does not support it
 const NAVIGATION_SUPPORT = "navigation" in window;
-const WATCH_ATTRIBUTES = {
-  ...createMass("href", ["base", "a", "area", "link"]),
-  ...createMass("action", ["form"]),
-  ...createMass("cite", ["blockquote", "del", "ins", "q"]),
-  ...createMass("data", ["object"]),
-  ...createMass("formaction", ["button", "input"]),
-  ...createMass("src", ["audio", "embed", "iframe", "img", "input", "script", "source", "track", "video"]),
-  ...createMass("poster", ["video"])
-};
+const WATCH_ATTRIBUTES = mergeAttrs(
+  ["href", ["base", "a", "area", "link"]],
+  ["action", ["form"]],
+  ["cite", ["blockquote", "del", "ins", "q"]],
+  ["data", ["object"]],
+  ["formaction", ["button", "input"]],
+  ["src", ["audio", "embed", "iframe", "img", "input", "script", "source", "track", "video"]],
+  ["poster", ["video"]]
+)
 
 const GLOBAL_ATTRIBUTES = ["itemid", "item"]
 
 const watchAttrs = [...new Set(Object.values(WATCH_ATTRIBUTES))]
 
-function createMass(id, elements) {
-  return Object.fromEntries(elements.map(i => [i, id]))
+
+function mergeAttrs(...attrs) {
+  const obj = {}
+  for (const attrArr of attrs) {
+    const id =
+  }
+  return obj
 }
 
 function addEruda() {
@@ -78,7 +83,7 @@ function getAttrForElement(element) {
   return WATCH_ATTRIBUTES[element.nodeName.toLowerCase()]
 }
 
-window.bulkSet = bulkSet;
+window.w = WATCH_ATTRIBUTES
 
 function setURL(element) {
   const name = getAttrForElement(element);
