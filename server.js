@@ -12,7 +12,7 @@ import { fileURLToPath } from "node:url";
 
 // Create Express Server
 const app = express();
-const INJECTION =
+const HEAD_INJECTION =
   '<script src="/injection.js?proxyresource" type="module"></script>';
 
 // Configuration
@@ -29,7 +29,7 @@ const options = {
     if (proxyRes.headers["content-type"]?.includes("text/html")) {
       return resBuffer
         .toString("utf-8")
-        .replace("<head>", "<head>" + INJECTION);
+        .replace("<head>", "<head>" + HEAD_INJECTION);
     }
 
     return resBuffer;

@@ -4,7 +4,7 @@ import {
   isValidURL,
   MESSAGE_TYPES as M,
 } from "./utils.js?proxyresource";
-import "./selector.js?proxyresource"
+import { mountConfig } from "./selector.js?proxyresource";
 
 // Firefox does not support it
 const NAVIGATION_SUPPORT = "navigation" in window;
@@ -68,7 +68,7 @@ async function addSW() {
   try {
     const r = await navigator.serviceWorker.register("/sh.js?proxyresource", {
       type: "module",
-      updateViaCache: "none"
+      updateViaCache: "none",
     });
     console.log("Service worker registered with scope: ", r.scope);
 
@@ -80,8 +80,8 @@ async function addSW() {
       console.log("Service worker active");
     }
     r.addEventListener("updatefound", () => {
-      console.log("New service worker being installed...")
-    })
+      console.log("New service worker being installed...");
+    });
   } catch (e) {
     console.error(e);
     alert("Failed to register service worker. Reason: " + e.toString());
@@ -120,12 +120,11 @@ function swListen() {
 
 async function swInit() {
   try {
-    swListen()
-    await Promise.allSettled([acquireSW(), addSW()])
+    swListen();
+    await Promise.allSettled([acquireSW(), addSW()]);
   } catch (e) {
-    alert("SW thing failed: " + e.toString())
-    console.error(e)
-    
+    alert("SW thing failed: " + e.toString());
+    console.error(e);
   }
 }
 
@@ -209,9 +208,14 @@ function observeHTML() {
 
 function init() {
   addEruda();
-  swInit()
+  swInit();
   if (NAVIGATION_SUPPORT) addPageLeave();
   observeHTML();
 }
 
+function initOnLoad() {
+  mountConfig();
+}
+
 init();
+window.addEventListener("load", initOnLoad);
