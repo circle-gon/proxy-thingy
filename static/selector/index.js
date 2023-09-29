@@ -14,6 +14,10 @@ const ConfigElement = class extends HTMLElement {
 
     // lazy the loading
     const { createApp } = await import(VUE_CDN_URL);
+    
+    const state = {
+      
+    }
 
     const shadow = this.attachShadow({ mode: "closed" });
     const c = document.createElement("div");
