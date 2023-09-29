@@ -3,15 +3,21 @@
 const VUE_CDN_URL =
   "https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.esm-browser.js";
 
-const components = ({state}) => ({
-  button: {
+const components = ({ state }) => ({
+  OpenerBtn: {
     setup() {
-      function toggleOpe
+      function toggleOpen() {
+        state.editorOpened = !state.editorOpened;
+      }
       return {
         state,
+        toggleOpen,
       };
     },
-    template: `<button id="config-edit-btn">FooBar</button>`,
+    template: `
+    <button id="config-edit-btn" @click="toggleOpen">
+      {{state.editorOpened ? "FooBar" : "hah"}}
+    </button>`,
   },
 });
 
@@ -25,6 +31,9 @@ const ConfigElement = class extends HTMLElement {
     if (this.hasInit) return;
     this.hasInit = true;
 
+    const shadow = this.attachShadow({ mode: "closed" });
+    const c = document.createElement("div");
+
     // lazy the loading
     const { createApp, reactive, onMounted } = await import(VUE_CDN_URL);
 
@@ -32,16 +41,19 @@ const ConfigElement = class extends HTMLElement {
       editorOpened: false,
     });
 
-    const shadow = this.attachShadow({ mode: "closed" });
-    const c = document.createElement("div");
+    const { OpenerBtn } = components({ state });
+
     const app = createApp({
       data() {
         return {
           count: 0,
         };
       },
+      components: {
+        OpenerBtn,
+      },
       template: `
-        <button @click="count++">{{ count }}</button>
+        <OpenerBtn />
       `,
     });
     app.mount(c);
