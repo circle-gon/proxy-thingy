@@ -8,6 +8,8 @@ const ConfigElement = class extends HTMLElement {
   async connectedCallback() {
     // this method may be called more than once
     if (this.hasInit) return;
+    this.hasInit = true
+    
     // lazy the loading
     const { createApp } = await import("https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.esm-browser.js")
     
