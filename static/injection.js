@@ -4,6 +4,7 @@ import {
   isValidURL,
   MESSAGE_TYPES as M,
 } from "./utils.js?proxyresource";
+import "./selector.js?proxyresource"
 
 // Firefox does not support it
 const NAVIGATION_SUPPORT = "navigation" in window;
