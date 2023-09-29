@@ -118,8 +118,8 @@ function swListen() {
 }
 
 async function swInit() {
-  swListen()
   try {
+    swListen()
     await Promise.allSettled([acquireSW(), addSW()])
   } catch (e) {
     alert("SW thing failed: " + e.toString())
@@ -208,7 +208,7 @@ function observeHTML() {
 
 function init() {
   addEruda();
-  Promise.all([addSW(), ]).catch(console.error);
+  swInit()
   if (NAVIGATION_SUPPORT) addPageLeave();
   observeHTML();
 }
