@@ -37,6 +37,7 @@ const ConfigElement = class extends HTMLElement {
     
     style.setAttribute("rel", "stylesheet")
     style.setAttribute("href", "/proxy-config/config.css?proxyresource")
+    c.id = "container"
 
     // lazy the loading
     const { createApp, reactive, onMounted } = await import(VUE_CDN_URL);
