@@ -31,12 +31,12 @@ const ConfigElement = class extends HTMLElement {
     if (this.hasInit) return;
     this.hasInit = true;
 
-    const shadow = this.attachShadow({ mode: "closed" });
+    const shadow = this.attachShadow({ mode: "open" });
     const c = document.createElement("div");
     const style = document.createElement("link")
     
-    style.rel = "stylesheet"
-    style.href = "./config.css"
+    style.setAttribute("rel", "stylesheet")
+    style.setAttribute("href", "/proxy-config/config.css?proxyresource")
 
     // lazy the loading
     const { createApp, reactive, onMounted } = await import(VUE_CDN_URL);

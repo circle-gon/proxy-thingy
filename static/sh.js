@@ -1,4 +1,4 @@
-import { getFirst, proxyAbsoluteURL, MESSAGE_TYPES as M } from "./utils.js?proxyresource"
+import { getFirst, proxyAbsoluteURL, MESSAGE_TYPES as M } from "/utils.js?proxyresource"
 
 function replaceURL(originalURL, currentBase) {
   const params = new URL(originalURL).searchParams;
