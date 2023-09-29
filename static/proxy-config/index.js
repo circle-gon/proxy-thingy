@@ -42,7 +42,7 @@ const ConfigElement = class extends HTMLElement {
     const { createApp, reactive, onMounted } = await import(VUE_CDN_URL);
 
     const state = reactive({
-      editorOpened: false,
+      editorOpened: false
     });
 
     const { OpenerBtn } = components({ state });
