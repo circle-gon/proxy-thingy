@@ -1,6 +1,19 @@
 // TODO: compile this
 
-const VUE_CDN_URL = "https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.esm-browser.js"
+const VUE_CDN_URL =
+  "https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.esm-browser.js";
+
+const components = ({state}) => ({
+  button: {
+    setup() {
+      function toggleOpe
+      return {
+        state,
+      };
+    },
+    template: `<button id="config-edit-btn">FooBar</button>`,
+  },
+});
 
 const ConfigElement = class extends HTMLElement {
   constructor() {
@@ -13,11 +26,11 @@ const ConfigElement = class extends HTMLElement {
     this.hasInit = true;
 
     // lazy the loading
-    const { createApp } = await import(VUE_CDN_URL);
-    
-    const state = {
-      
-    }
+    const { createApp, reactive, onMounted } = await import(VUE_CDN_URL);
+
+    const state = reactive({
+      editorOpened: false,
+    });
 
     const shadow = this.attachShadow({ mode: "closed" });
     const c = document.createElement("div");
