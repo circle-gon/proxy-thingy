@@ -15,7 +15,7 @@ const components = ({ state }) => ({
       };
     },
     template: `
-    <button id="config-edit-btn" @click="toggleOpen">
+    <button id="config-btn" @click="toggleOpen">
       {{state.editorOpened ? "FooBar" : "hah"}}
     </button>`,
   },
@@ -33,6 +33,10 @@ const ConfigElement = class extends HTMLElement {
 
     const shadow = this.attachShadow({ mode: "closed" });
     const c = document.createElement("div");
+    const style = document.createElement("link")
+    
+    style.rel = "stylesheet"
+    style.href = "./config.css"
 
     // lazy the loading
     const { createApp, reactive, onMounted } = await import(VUE_CDN_URL);
@@ -56,8 +60,11 @@ const ConfigElement = class extends HTMLElement {
         <OpenerBtn />
       `,
     });
+    
+    console.log(style)
+    
     app.mount(c);
-    shadow.append(c);
+    shadow.append(c, style);
   }
 };
 
