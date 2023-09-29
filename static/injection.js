@@ -101,6 +101,7 @@ async function swListen() {
       thingies.push(data);
     })
   );
+  navigator.service
   const registration = (await navigator.serviceWorker.ready).active;
   registration.postMessage({
     type: M.FETCH,
