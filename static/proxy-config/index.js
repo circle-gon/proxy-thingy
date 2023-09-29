@@ -16,9 +16,20 @@ const components = ({ state }) => ({
     },
     template: `
     <button id="config-btn" @click="toggleOpen">
-      {{state.editorOpened ? "FooBar" : "hah"}}
+      {{state.editorOpened ? "Close" : "Open"}}
     </button>`,
   },
+  EditModal: {
+    setup() {
+      return {
+        state
+      }
+    },
+    template: `
+    <div id="edit-modal" v-if="state.editorOpened">
+      Boo!
+    </div>`
+  }
 });
 
 const ConfigElement = class extends HTMLElement {
