@@ -34,7 +34,7 @@ const GLOBAL_ATTRIBUTES = ["itemid", "itemtype"];
 const WHITESPACE_SPLITTER = /\s/g;
 
 const watchAttrs = [...new Set(Object.values(WATCH_ATTRIBUTES))];
-let activeSW;
+window.activeSW = undefined;
 
 function mergeAttrs(...attrs) {
   const obj = {};
