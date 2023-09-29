@@ -34,6 +34,7 @@ const GLOBAL_ATTRIBUTES = ["itemid", "itemtype"];
 const WHITESPACE_SPLITTER = /\s/g;
 
 const watchAttrs = [...new Set(Object.values(WATCH_ATTRIBUTES))];
+let activeSW;
 
 function mergeAttrs(...attrs) {
   const obj = {};
@@ -46,26 +47,28 @@ function mergeAttrs(...attrs) {
   return obj;
 }
 
+// Eruda
+
 function addEruda() {
   const script = document.createElement("script");
   script.src = "https://cdn.jsdelivr.net/npm/eruda";
-  script.onerror = function (e) {
+  script.addEventListener("error", () => {
     alert("Failed.");
-  };
-  script.onload = function () {
+  });
+  script.addEventListener("load", () => {
     window.eruda.init();
-  };
+  });
   document.body.appendChild(script);
 }
 
+// SW code
+
 async function addSW() {
   try {
-    const r = await navigator.serviceWorker.register(
-      "/sh.js?proxyresource",
-      {
-        type: "module",
-      }
-    );
+    const r = await navigator.serviceWorker.register("/sh.js?proxyresource", {
+      type: "module",
+      updateViaCache: "none"
+    });
     console.log("Service worker registered with scope: ", r.scope);
 
     if (r.installing) {
@@ -75,6 +78,9 @@ async function addSW() {
     } else if (r.active) {
       console.log("Service worker active");
     }
+    r.addEventListener("updatefound", () => {
+      console.log("New service worker being installed...")
+    })
   } catch (e) {
     console.error(e);
     alert("Failed to register service worker. Reason: " + e.toString());
@@ -93,7 +99,11 @@ function utilMessage(func) {
 
 window.thingies = [];
 
-async function swListen() {
+async function acquireSW() {
+  activeSW = (await navigator.serviceWorker.ready).active;
+}
+
+function swListen() {
   navigator.serviceWorker.startMessages();
   navigator.serviceWorker.addEventListener(
     "message",
@@ -101,17 +111,30 @@ async function swListen() {
       thingies.push(data);
     })
   );
-  navigator.service
-  const registration = (await navigator.serviceWorker.ready).active;
-  registration.postMessage({
-    type: M.FETCH,
-    data: "foobar",
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    alert("New service worker acquired!");
+    acquireSW();
   });
 }
+
+async function swInit() {
+  swListen()
+  try {
+    await Promise.allSettled([acquireSW(), addSW()])
+  } catch (e) {
+    alert("SW thing failed: " + e.toString())
+    console.error(e)
+    
+  }
+}
+
+// pageLeave code
 
 function addPageLeave() {
   window.addEventListener("pagehide", (e) => {});
 }
+
+// MutationObserver code starts now
 
 function proxyWithRelativeURL(originalURL) {
   // this feels so weird but it works!
@@ -152,8 +175,6 @@ function bulkSet(element) {
   }
 }
 
-window.bs = bulkSet;
-
 function observeHTML() {
   bulkSet(document.documentElement);
 
@@ -183,11 +204,13 @@ function observeHTML() {
   });
 }
 
+// end MutationObserver code
+
 function init() {
   addEruda();
-  Promise.all([addSW(), swListen()]).catch(console.error);
+  Promise.all([addSW(), ]).catch(console.error);
   if (NAVIGATION_SUPPORT) addPageLeave();
   observeHTML();
 }
 
-init()
+init();
