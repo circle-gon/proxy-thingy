@@ -3,17 +3,20 @@
   bottom: 0;
   right: 0;
   touch-action: none;
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   background: grey;
   border-radius: 10px;
   text-align: center;
 }
 
 #edit-modal {
-  width: 90%;
-  height: 90%;
-  background: grey;
+  position: absolute;
+  left: 25px;
+  top: 25px;
+  width: calc(100% - 50px);
+  height: calc(100% - 50px);
+  background: green;
   border-radius: 5%;
 }
 

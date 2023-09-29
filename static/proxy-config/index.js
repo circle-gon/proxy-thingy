@@ -57,7 +57,7 @@ const ConfigElement = class extends HTMLElement {
       editorOpened: false
     });
 
-    const { OpenerBtn } = components({ state });
+    const { OpenerBtn, EditModal } = components({ state });
 
     const app = createApp({
       data() {
@@ -67,9 +67,11 @@ const ConfigElement = class extends HTMLElement {
       },
       components: {
         OpenerBtn,
+        EditModal
       },
       template: `
         <OpenerBtn />
+        <EditModal />
       `,
     });
     
