@@ -5,7 +5,7 @@ const VUE_CDN_URL =
 
 const TABLE_NAMES = ["Foo", "Bar", "Toast"]
 
-const components = ({ state }) => {
+const components = ({ state, computed }) => {
   const OpenerBtn = {
     setup() {
       function toggleOpen() {
@@ -38,6 +38,27 @@ const components = ({ state }) => {
     </table>
     `
   }
+  const OptionContent = {
+    setup() {
+      const tabNum = computed(() => state.openedTo)
+      return {
+        tabNum
+      }
+    },
+    template: `
+    <div id="config-content">
+    <template v-if="tabNum === 0">
+    Hello there!
+    </template>
+    <template v-else-if="tabNum === 1">
+    Say hi!
+    </template>
+    <template v-else>
+    Oh noes, this has not been implemented...
+    </template>
+    </div>
+    `
+  }
   const EditModal = {
     setup() {
       return {
@@ -45,12 +66,14 @@ const components = ({ state }) => {
       }
     },
     components: {
-      OptionSelector
+      OptionSelector,
+      OptionContent
     },
     template: `
     <div id="edit-modal" v-if="state.editorOpened">
       <div id="modal-content">
         <OptionSelector />
+        <OptionContent />
       </div>
     </div>`
   }
@@ -79,7 +102,7 @@ const ConfigElement = class extends HTMLElement {
     c.id = "container"
 
     // lazy the loading
-    const { createApp, reactive } = await import(VUE_CDN_URL);
+    const { createApp, reactive, computed } = await import(VUE_CDN_URL);
 
     const state = reactive({
       editorOpened: false,
@@ -87,7 +110,7 @@ const ConfigElement = class extends HTMLElement {
     });
 
     const app = createApp({
-      components: components({ state }),
+      components: components({ state, computed }),
       template: `
         <OpenerBtn />
         <EditModal />
