@@ -34,7 +34,9 @@ const WATCH_ATTRIBUTES = mergeAttrs(
 const BULK_ATTRIBUTES = ["ping", "itemtype"];
 const GLOBAL_ATTRIBUTES = ["itemid", "itemtype"];
 const WHITESPACE_SPLITTER = /\s/g;
-const proxyBase = getFirst(location.pathname)
+const STORAGE_OVERWRITE = ["getItem", "setItem", "removeItem", "key", "clear"];
+
+const proxyBase = getFirst(location.pathname);
 
 const watchAttrs = [...new Set(Object.values(WATCH_ATTRIBUTES))];
 let activeSW;
@@ -206,47 +208,61 @@ function observeHTML() {
 
 // end MutationObserver code
 
-function overwriteProto(base, key, objToBind, methodOverwrite) {
-  const original = base[key]
-  base[key] = function (...args) {
-    const method = original.bind(this)
-    return methodOverwrite(original, ...args)
-  }
-}
-
 function overwriteStorage() {
   // store based on website
-  const methodsToOverwrite = ["getItem", "setItem", "removeItem", "key", "clear"]
-  const original = Object.fromEntries(methodsToOverwrite.map(i => [i, Storage.prototype[i]]))
-  
-  Storage.prototype.getItem = function(name) {
-    if (typeof name === "symbol") throw new TypeError("Cannot convert a Symbol value into a string")
-    // JSON.parse(null) === null
-    const data = JSON.parse(original.getItem.call(this, proxyBase))
-    return data === null ? data : (data[name] ?? null)
+  // URL -> { keys: values }
+  const original = Object.fromEntries(
+    STORAGE_OVERWRITE.map((i) => [i, Storage.prototype[i]])
+  );
+  window.original = original
+
+  function easyGet(context) {
+    return JSON.parse(original.getItem.call(context, proxyBase)) ?? {};
   }
-  Storage.prototype.setItem = function(name, value) {
-    if (typeof name === "symbol" || value === "symbol") throw new TypeError("Cannot convert a Symbol value into a string")
-    const data = JSON.parse(original.getItem.call(this, proxyBase)) ?? {}
-    data[name] = String(value)
-    original.setItem.call(this, proxyBase, JSON.stringify(data))
+  function sanityCheck(type) {
+    return (...args) => {
+      for (const arg of args) {
+        if (typeof arg === "symbol")
+          throw new TypeError("Cannot convert a Symbol value into a " + type);
+      }
+    };
   }
-  Storage.prototype.removeItem = function(name) {
-    if (typeof name === "symbol") throw new TypeError("Cannot convert a Symbol value into a string")
-    const data = JSON.parse(original.getItem.call(this, proxyBase)) ?? {}
-    delete data[name]
-    if (Object.keys(data) > 0) original.setItem.call(this, proxyBase, JSON.stringify(data))
-    else this.clear()
-  }
-  Storage.prototype.key = function(n) {
-    if (typeof name === "symbol") throw new TypeError("Cannot convert a Symbol value into a number")
-    const data = JSON.parse(original.getItem.call(this, proxyBase)) ?? {}
-    const key = Object.keys(data)[n]
-    return data[key] ?? null
-  }
-  Storage.prototype.clear = function() {
-    original.removeItem.call(this, proxyBase)
-  }
+
+  const stringCheck = sanityCheck("string");
+  const numberCheck = sanityCheck("number");
+
+  Storage.prototype.getItem = function (name) {
+    stringCheck(name);
+    return easyGet(this)[name] ?? null;
+  };
+  Storage.prototype.setItem = function (name, value) {
+    stringCheck(name, value);
+    const data = easyGet(this);
+    data[name] = String(value);
+    original.setItem.call(this, proxyBase, JSON.stringify(data));
+  };
+  Storage.prototype.removeItem = function (name) {
+    stringCheck(name);
+    const data = easyGet(this);
+    delete data[name];
+    if (Object.keys(data) > 0)
+      original.setItem.call(this, proxyBase, JSON.stringify(data));
+    else this.clear();
+  };
+  Storage.prototype.key = function (n) {
+    numberCheck(n);
+    const data = easyGet(this);
+    const key = Object.keys(data)[n];
+    return data[key] ?? null;
+  };
+  Storage.prototype.clear = function () {
+    original.removeItem.call(this, proxyBase);
+  };
+  Object.defineProperty(Storage.prototype, "length", {
+    get() {
+      return Object.keys(easyGet(this));
+    },
+  });
 }
 
 function init() {
