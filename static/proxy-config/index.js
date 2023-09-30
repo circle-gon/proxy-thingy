@@ -3,8 +3,10 @@
 const VUE_CDN_URL =
   "https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.esm-browser.js";
 
-const components = ({ state }) => ({
-  OpenerBtn: {
+const TABLE_NAMES = ["Foo", "Bar", "Toast"]
+
+const components = ({ state }) => {
+  const OpenerBtn = {
     setup() {
       function toggleOpen() {
         state.editorOpened = !state.editorOpened;
@@ -18,21 +20,45 @@ const components = ({ state }) => ({
     <button id="config-btn" @click="toggleOpen">
       {{state.editorOpened ? "Close" : "Open"}}
     </button>`,
-  },
-  EditModal: {
+  }
+  const OptionSelector = {
+    setup() {
+      return {
+        state,
+        names: TABLE_NAMES
+      }
+    },
+    template: `
+    <table id="selector-table">
+      <tr v-for="(name, index) in names">
+        <td :class="{ active: state.openedTo === index }" class="selector" @click="state.openedTo = index">
+          {{name}}
+        </td>
+      </tr>
+    </table>
+    `
+  }
+  const EditModal = {
     setup() {
       return {
         state
       }
     },
+    components: {
+      OptionSelector
+    },
     template: `
     <div id="edit-modal" v-if="state.editorOpened">
       <div id="modal-content">
-      Boo!
+        <OptionSelector />
       </div>
     </div>`
   }
-});
+  return {
+    OpenerBtn,
+    EditModal
+  }
+};
 
 const ConfigElement = class extends HTMLElement {
   constructor() {
@@ -53,19 +79,15 @@ const ConfigElement = class extends HTMLElement {
     c.id = "container"
 
     // lazy the loading
-    const { createApp, reactive, onMounted } = await import(VUE_CDN_URL);
+    const { createApp, reactive } = await import(VUE_CDN_URL);
 
     const state = reactive({
-      editorOpened: false
+      editorOpened: false,
+      openedTo: 0
     });
 
-    const { OpenerBtn, EditModal } = components({ state });
-
     const app = createApp({
-      components: {
-        OpenerBtn,
-        EditModal
-      },
+      components: components({ state }),
       template: `
         <OpenerBtn />
         <EditModal />
