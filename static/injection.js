@@ -236,45 +236,60 @@ function overwriteStorage() {
 
   const stringCheck = sanityCheck("string");
   const numberCheck = sanityCheck("number");
-  
-  const FakeStorage = function() {
-    if (this === window)
-  }
 
-  Storage.prototype.getItem = function (name) {
-    const data = easyGet(this)
-    stringCheck(arguments.length, "getItem", name);
-    return data[name] ?? null;
+  const FakeStorage = function () {
+    if (this === window) throw new TypeError("Illegal constructor");
   };
-  Storage.prototype.setItem = function (name, value) {
-    const data = easyGet(this);
-    stringCheck(arguments.length, "setItem", name, value);
-    //console.log(data, name, value)
-    data[name] = String(value);
-    original.setItem.call(this, proxyBase, JSON.stringify(data));
-    //console.log(original.getItem.call(this, proxyBase))
-  };
-  Storage.prototype.removeItem = function (name) {
-    const data = easyGet(this);
-    stringCheck(arguments.length, "removeItem", name);
-    delete data[name];
-    if (Object.keys(data).length > 0)
+
+  const base = {
+    getItem(name) {
+      const data = easyGet(this);
+      stringCheck(arguments.length, "getItem", name);
+      return data[name] ?? null;
+    },
+    setItem(name, value) {
+      const data = easyGet(this);
+      stringCheck(arguments.length, "setItem", name, value);
+      //console.log(data, name, value)
+      data[name] = String(value);
       original.setItem.call(this, proxyBase, JSON.stringify(data));
-    else this.clear();
-  };
-  Storage.prototype.key = function (n) {
-    const key = easyGet(this)
-    numberCheck(arguments.length, "key", n);
-    return Object.keys(key)[n] ?? null;
-  };
-  Storage.prototype.clear = function () {
-    original.removeItem.call(this, proxyBase);
-  };
-  Object.defineProperty(Storage.prototype, "length", {
-    get() {
+      //console.log(original.getItem.call(this, proxyBase))
+    },
+    removeItem(name) {
+      const data = easyGet(this);
+      stringCheck(arguments.length, "removeItem", name);
+      delete data[name];
+      if (Object.keys(data).length > 0)
+        original.setItem.call(this, proxyBase, JSON.stringify(data));
+      else this.clear();
+    },
+    key(n) {
+      const key = easyGet(this);
+      numberCheck(arguments.length, "key", n);
+      return Object.keys(key)[n] ?? null;
+    },
+    clear() {
+      original.removeItem.call(this, proxyBase);
+    },
+    get length() {
       return Object.keys(easyGet(this)).length;
     },
-  });
+  };
+  
+  const real = new Proxy(base, {
+    get(target, prop, reciever) {
+      const hasIt = Reflect.has(target, prop)
+      if (hasIt) return Reflect.get(target, prop, reciever)
+      return target.getItem(prop)
+    },
+    set(target, prop, value, reciever) {
+      const hasIt = Reflect.has(target, prop)
+      if (hasIt) return Reflect.set(target, prop, value, reciever)
+      target.setItem(prop)
+      return true
+    }
+    
+  })
 }
 
 function init() {
