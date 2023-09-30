@@ -3,7 +3,7 @@
 const VUE_CDN_URL =
   "https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.esm-browser.js";
 
-const TABLE_NAMES = ["Foo", "Bar", "Toast"]
+const TABLE_NAMES = ["Foo", "Bar", "Toast", "egg", "cheese", "about", "spam", "i want your email"]
 
 const components = ({ state, computed }) => {
   const OpenerBtn = {
