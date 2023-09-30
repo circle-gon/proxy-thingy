@@ -237,17 +237,13 @@ function overwriteStorage() {
   const stringCheck = sanityCheck("string");
   const numberCheck = sanityCheck("number");
 
-  const base = class extends Storage {
-    constructor() {
-      return new Proxy({
-        aaaaaaaaaa: 1
-      })
-    }
+  const base = {
+    __proto__: Storage,
     getItem(name) {
       const data = easyGet(this);
       stringCheck(arguments.length, "getItem", name);
       return data[name] ?? null;
-    }
+    },
     setItem(name, value) {
       const data = easyGet(this);
       stringCheck(arguments.length, "setItem", name, value);
@@ -255,7 +251,7 @@ function overwriteStorage() {
       data[name] = String(value);
       original.setItem.call(this, proxyBase, JSON.stringify(data));
       //console.log(original.getItem.call(this, proxyBase))
-    }
+    },
     removeItem(name) {
       const data = easyGet(this);
       stringCheck(arguments.length, "removeItem", name);
@@ -263,15 +259,15 @@ function overwriteStorage() {
       if (Object.keys(data).length > 0)
         original.setItem.call(this, proxyBase, JSON.stringify(data));
       else this.clear();
-    }
+    },
     key(n) {
       const key = easyGet(this);
       numberCheck(arguments.length, "key", n);
       return Object.keys(key)[n] ?? null;
-    }
+    },
     clear() {
       original.removeItem.call(this, proxyBase);
-    }
+    },
     get length() {
       return Object.keys(easyGet(this)).length;
     }
@@ -281,12 +277,12 @@ function overwriteStorage() {
     get(target, prop, reciever) {
       const hasIt = Reflect.has(target, prop)
       if (hasIt) return Reflect.get(target, prop, reciever)
-      return target.getItem(prop)
+      return base.getItem(prop)
     },
     set(target, prop, value, reciever) {
       const hasIt = Reflect.has(target, prop)
       if (hasIt) return Reflect.set(target, prop, value, reciever)
-      target.setItem(prop)
+      base.setItem(prop)
       return true
     }
   })
@@ -296,15 +292,14 @@ function overwriteStorage() {
     configurable: true
   })
   
-  Object.setPrototypeOf(FakeStorage, Storage)
-  localStorage.prototype = FakeStorage
-  window.s = FakeStorage
+  Object.setPrototypeOf(localStorage, FakeStorage)
+  window.Storage = base
 }
 
 function init() {
   addEruda();
   swInit();
-  //overwriteStorage();
+  overwriteStorage();
   if (NAVIGATION_SUPPORT) addPageLeave();
   observeHTML();
 }
