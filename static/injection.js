@@ -236,6 +236,10 @@ function overwriteStorage() {
 
   const stringCheck = sanityCheck("string");
   const numberCheck = sanityCheck("number");
+  
+  const FakeStorage = function() {
+    if (this === window)
+  }
 
   Storage.prototype.getItem = function (name) {
     const data = easyGet(this)
