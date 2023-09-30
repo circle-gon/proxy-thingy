@@ -1,4 +1,4 @@
-import { getFirst, proxyAbsoluteURL, MESSAGE_TYPES as M } from "/utils.js?proxyresource"
+import { getFirst, proxyAbsoluteURL, MESSAGE_TYPES as M, utilListen } from "/utils.js?proxyresource"
 
 function replaceURL(originalURL, currentBase) {
   const params = new URL(originalURL).searchParams;
@@ -42,6 +42,14 @@ function requestToObject(request) {
   return obj;
 }
 
+function iWantMyCookies(client) {
+  return new Promise(r => {
+    client.postMessage({
+      type: M.COOKIES
+    })
+  })
+}
+
 async function mockClientRequest(request, id) {
   // 1. get the url originating the request
   const client = await self.clients.get(id);
@@ -77,9 +85,12 @@ self.addEventListener("install", (e) => {
   e.waitUntil(self.clients.claim());
 });
 
-self.addEventListener("message", e => {
-  console.log("Boo!")
-})
+self.addEventListener("message", utilListen(data => {
+  switch (data.type) {
+    case M.COOKIES:
+      
+  }
+}))
 
 self.addEventListener("fetch", (e) => {
   e.respondWith(mockClientRequest(e.request, e.clientId));

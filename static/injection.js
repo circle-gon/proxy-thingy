@@ -3,6 +3,7 @@ import {
   proxyAbsoluteURL,
   isValidURL,
   MESSAGE_TYPES as M,
+  utilListen
 } from "/utils.js?proxyresource";
 import { mountConfig } from "/proxy-config/index.js?proxyresource";
 
@@ -35,7 +36,7 @@ const GLOBAL_ATTRIBUTES = ["itemid", "itemtype"];
 const WHITESPACE_SPLITTER = /\s/g;
 
 const watchAttrs = [...new Set(Object.values(WATCH_ATTRIBUTES))];
-window.activeSW = undefined;
+let activeSW;
 
 function mergeAttrs(...attrs) {
   const obj = {};
@@ -88,17 +89,7 @@ async function addSW() {
   }
 }
 
-function utilMessage(func) {
-  return function (e) {
-    if (location.origin !== e.origin) {
-      console.log("Recieved message from a different origin: " + e.origin);
-    } else {
-      func(e.data);
-    }
-  };
-}
-
-window.thingies = [];
+const thingies = [];
 
 async function acquireSW() {
   activeSW = (await navigator.serviceWorker.ready).active;
@@ -108,8 +99,20 @@ function swListen() {
   navigator.serviceWorker.startMessages();
   navigator.serviceWorker.addEventListener(
     "message",
-    utilMessage((data) => {
-      thingies.push(data);
+    utilListen((data) => {
+      switch (data.type) {
+        case M.FETCH:
+          thingies.push(data.data)
+          break
+        case M.COOKIES:
+          activeSW?.postMessage({
+            type: M.COOKIES,
+            cookies: document.cookie
+          })
+          break
+        default:
+          throw new TypeError("What did you send? (" + data.type + ")")
+      }
     })
   );
   navigator.serviceWorker.addEventListener("controllerchange", () => {

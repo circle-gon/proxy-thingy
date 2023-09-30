@@ -47,8 +47,24 @@ export function proxyAbsoluteURL(originalURL, currentBase = undefined) {
   }
 }
 
+export function utilListen(func) {
+  return e => {
+    if (location.origin !== e.origin) {
+      console.log("Recieved message from a different origin: " + e.origin);
+    } else {
+      func(e.data);
+    }
+  };
+}
+
 // an enum of sorts
 
 export const MESSAGE_TYPES = Object.freeze({
-  FETCH: 0
+  // a fetch request has been made
+  // SW -> Client
+  FETCH: 0,
+  // cookies have been requested/sent
+  // SW -> Client & Client -> SW
+  // SW requests cookies from the Client and the Client sends them to the SW
+  COOKIES: 1
 })
