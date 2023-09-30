@@ -29,6 +29,7 @@ const components = ({ state, computed }) => {
       }
     },
     template: `
+    <div id="selector-parent">
     <table id="selector-table">
       <tr v-for="(name, index) in names">
         <td :class="{ active: state.openedTo === index }" class="selector" @click="state.openedTo = index">
@@ -36,6 +37,7 @@ const components = ({ state, computed }) => {
         </td>
       </tr>
     </table>
+    </div>
     `
   }
   const OptionContent = {
