@@ -205,9 +205,21 @@ function observeHTML() {
 
 // end MutationObserver code
 
+function overwriteProto(base, key, objToBind, methodOverwrite) {
+  const original = base[key].bind(objToBind)
+  base[key] = function (...args) {
+    return methodOverwrite(original, ...args)
+  }
+}
+
+function overwriteStorage() {
+   const 
+}
+
 function init() {
   addEruda();
   swInit();
+  overwriteStorage();
   if (NAVIGATION_SUPPORT) addPageLeave();
   observeHTML();
 }
