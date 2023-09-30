@@ -214,13 +214,19 @@ function overwriteStorage() {
   const original = Object.fromEntries(
     STORAGE_OVERWRITE.map((i) => [i, Storage.prototype[i]])
   );
-  window.original = original
+  window.original = original;
 
   function easyGet(context) {
     return JSON.parse(original.getItem.call(context, proxyBase)) ?? {};
   }
   function sanityCheck(type) {
-    return (...args) => {
+    return (argsPassed, name, ...args) => {
+      if (argsPassed < args.length)
+        throw new TypeError(
+          `Failed to execute '${name}' on 'Storage': ${args.length} argument${
+            args.length > 1 ? "s" : ""
+          } required, but only ${argsPassed} present.`
+        );
       for (const arg of args) {
         if (typeof arg === "symbol")
           throw new TypeError("Cannot convert a Symbol value into a " + type);
@@ -232,17 +238,17 @@ function overwriteStorage() {
   const numberCheck = sanityCheck("number");
 
   Storage.prototype.getItem = function (name) {
-    stringCheck(name);
+    stringCheck(arguments.length, "getItem", name);
     return easyGet(this)[name] ?? null;
   };
   Storage.prototype.setItem = function (name, value) {
-    stringCheck(name, value);
+    stringCheck(arguments.length, "setItem", name, value);
     const data = easyGet(this);
     data[name] = String(value);
     original.setItem.call(this, proxyBase, JSON.stringify(data));
   };
   Storage.prototype.removeItem = function (name) {
-    stringCheck(name);
+    stringCheck(arguments.length, "removeItem", name);
     const data = easyGet(this);
     delete data[name];
     if (Object.keys(data) > 0)
@@ -250,7 +256,7 @@ function overwriteStorage() {
     else this.clear();
   };
   Storage.prototype.key = function (n) {
-    numberCheck(n);
+    numberCheck(arguments.length, "key", n);
     const data = easyGet(this);
     const key = Object.keys(data)[n];
     return data[key] ?? null;
@@ -260,7 +266,7 @@ function overwriteStorage() {
   };
   Object.defineProperty(Storage.prototype, "length", {
     get() {
-      return Object.keys(easyGet(this));
+      return Object.keys(easyGet(this)).length;
     },
   });
 }
