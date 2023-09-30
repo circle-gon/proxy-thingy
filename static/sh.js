@@ -77,7 +77,7 @@ async function mockClientRequest(request, id) {
   return await fetch(request);
 }
 
-self.addEventListener("install", (e) => {
+self.addEventListener("activate", (e) => {
   self.skipWaiting();
   e.waitUntil(self.clients.claim());
 });

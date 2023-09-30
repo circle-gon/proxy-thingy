@@ -217,36 +217,42 @@ function overwriteProto(base, key, objToBind, methodOverwrite) {
 function overwriteStorage() {
   // store based on website
   const methodsToOverwrite = ["getItem", "setItem", "removeItem", "key", "clear"]
-  const original = Object.fromEntries(methodsToOverwrite.map(i => [methodsToOverwrite, Storage.prototype[i]]))
+  const original = Object.fromEntries(methodsToOverwrite.map(i => [i, Storage.prototype[i]]))
   
   Storage.prototype.getItem = function(name) {
-    if (typeof name !== "string")
+    if (typeof name === "symbol") throw new TypeError("Cannot convert a Symbol value into a string")
     // JSON.parse(null) === null
     const data = JSON.parse(original.getItem.call(this, proxyBase))
     return data === null ? data : (data[name] ?? null)
   }
   Storage.prototype.setItem = function(name, value) {
+    if (typeof name === "symbol" || value === "symbol") throw new TypeError("Cannot convert a Symbol value into a string")
     const data = JSON.parse(original.getItem.call(this, proxyBase)) ?? {}
     data[name] = String(value)
     original.setItem.call(this, proxyBase, JSON.stringify(data))
   }
   Storage.prototype.removeItem = function(name) {
+    if (typeof name === "symbol") throw new TypeError("Cannot convert a Symbol value into a string")
     const data = JSON.parse(original.getItem.call(this, proxyBase)) ?? {}
     delete data[name]
     if (Object.keys(data) > 0) original.setItem.call(this, proxyBase, JSON.stringify(data))
-    else original.removeItem.call(this, proxyBase)
+    else this.clear()
   }
   Storage.prototype.key = function(n) {
+    if (typeof name === "symbol") throw new TypeError("Cannot convert a Symbol value into a number")
     const data = JSON.parse(original.getItem.call(this, proxyBase)) ?? {}
     const key = Object.keys(data)[n]
-    
+    return data[key] ?? null
+  }
+  Storage.prototype.clear = function() {
+    original.removeItem.call(this, proxyBase)
   }
 }
 
 function init() {
   addEruda();
   swInit();
- // overwriteStorage();
+  overwriteStorage();
   if (NAVIGATION_SUPPORT) addPageLeave();
   observeHTML();
 }
