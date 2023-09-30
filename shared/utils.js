@@ -47,10 +47,10 @@ export function proxyAbsoluteURL(originalURL, currentBase = undefined) {
   }
 }
 
-export function utilListen(func, source) {
-  return e => {
-    if (location.origin !== e.origin || e.source !== source) {
-      console.log("Invalid response");
+export function utilListen(func, origin) {
+  return function (e) {
+    if (origin !== e.origin) {
+      console.log("Recieved message from a different origin: " + e.origin);
     } else {
       func(e.data);
     }
@@ -62,9 +62,5 @@ export function utilListen(func, source) {
 export const MESSAGE_TYPES = Object.freeze({
   // a fetch request has been made
   // SW -> Client
-  FETCH: 0,
-  // cookies have been requested/sent
-  // SW -> Client & Client -> SW
-  // SW requests cookies from the Client and the Client sends them to the SW
-  COOKIES: 1
+  FETCH: 0
 })

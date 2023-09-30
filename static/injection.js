@@ -104,12 +104,6 @@ function swListen() {
         case M.FETCH:
           thingies.push(data.data)
           break
-        case M.COOKIES:
-          activeSW?.postMessage({
-            type: M.COOKIES,
-            cookies: document.cookie
-          })
-          break
         default:
           throw new TypeError("What did you send? (" + data.type + ")")
       }

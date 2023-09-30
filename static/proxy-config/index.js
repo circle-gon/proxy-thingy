@@ -115,7 +115,7 @@ const ConfigElement = class extends HTMLElement {
       components: components({ state, computed }),
       template: `
         <OpenerBtn />
-        <OptionalModal />
+        <OptionModal />
       `,
     });
     

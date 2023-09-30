@@ -47,25 +47,6 @@ function requestToObject(request) {
   return obj;
 }
 
-function getMessage(type) {
-  return new Promise((r) => {
-    self.addEventListener(
-      "message",
-      utilListen((data) => {
-        if (data.type === type) r(data);
-      }),
-      { once: true }
-    );
-  });
-}
-
-async function iWantMyCookies(client) {
-  client.postMessage({
-    type: M.COOKIES,
-  });
-  return await getMessage(client, M.COOKIES);
-}
-
 async function mockClientRequest(request, id) {
   // 1. get the url originating the request
   const client = await self.clients.get(id);
@@ -75,7 +56,6 @@ async function mockClientRequest(request, id) {
       request.url,
       getFirst(new URL(client.url).pathname)
     );
-    const cookies = await iWantMyCookies(client)
 
     client.postMessage({
       type: M.FETCH,
