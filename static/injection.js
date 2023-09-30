@@ -34,6 +34,7 @@ const WATCH_ATTRIBUTES = mergeAttrs(
 const BULK_ATTRIBUTES = ["ping", "itemtype"];
 const GLOBAL_ATTRIBUTES = ["itemid", "itemtype"];
 const WHITESPACE_SPLITTER = /\s/g;
+const proxyBase = getFirst(location.pathname)
 
 const watchAttrs = [...new Set(Object.values(WATCH_ATTRIBUTES))];
 let activeSW;
@@ -138,7 +139,7 @@ function addPageLeave() {
 function proxyWithRelativeURL(originalURL) {
   // this feels so weird but it works!
   const realURL = new URL(originalURL, location.href).href;
-  return proxyAbsoluteURL(realURL, getFirst(location.pathname));
+  return proxyAbsoluteURL(realURL, proxyBase);
 }
 
 function getAttrsForElement(element) {
@@ -206,22 +207,27 @@ function observeHTML() {
 // end MutationObserver code
 
 function overwriteProto(base, key, objToBind, methodOverwrite) {
-  const original = base[key].bind(objToBind)
+  const original = base[key]
   base[key] = function (...args) {
+    const method = original.bind(this)
     return methodOverwrite(original, ...args)
   }
 }
 
 function overwriteStorage() {
-   overwriteProto(Storage.prototype, "getItem", (original, thing) => {
-     return JSON.parse(original("thing"))[thing]
-   })
+  // store based on website
+  const methodsToOverwrite = ["getItem", "setItem", "removeItem", "key", "clear"]
+  const original = Object.fromEntries(methodsToOverwrite.map(i => [methodsToOverwrite, Storage.prototype[i]]))
+  Storage.prototype.getItem = function(name) {
+    const data = original.getItem.call(this, proxyBase) 
+    const newData = data ? JSON.parse(data) : {}
+  }
 }
 
 function init() {
   addEruda();
   swInit();
-  overwriteStorage();
+ // overwriteStorage();
   if (NAVIGATION_SUPPORT) addPageLeave();
   observeHTML();
 }
