@@ -218,9 +218,28 @@ function overwriteStorage() {
   // store based on website
   const methodsToOverwrite = ["getItem", "setItem", "removeItem", "key", "clear"]
   const original = Object.fromEntries(methodsToOverwrite.map(i => [methodsToOverwrite, Storage.prototype[i]]))
+  
   Storage.prototype.getItem = function(name) {
-    const data = original.getItem.call(this, proxyBase) 
-    const newData = data ? JSON.parse(data) : {}
+    if (typeof name !== "string")
+    // JSON.parse(null) === null
+    const data = JSON.parse(original.getItem.call(this, proxyBase))
+    return data === null ? data : (data[name] ?? null)
+  }
+  Storage.prototype.setItem = function(name, value) {
+    const data = JSON.parse(original.getItem.call(this, proxyBase)) ?? {}
+    data[name] = String(value)
+    original.setItem.call(this, proxyBase, JSON.stringify(data))
+  }
+  Storage.prototype.removeItem = function(name) {
+    const data = JSON.parse(original.getItem.call(this, proxyBase)) ?? {}
+    delete data[name]
+    if (Object.keys(data) > 0) original.setItem.call(this, proxyBase, JSON.stringify(data))
+    else original.removeItem.call(this, proxyBase)
+  }
+  Storage.prototype.key = function(n) {
+    const data = JSON.parse(original.getItem.call(this, proxyBase)) ?? {}
+    const key = Object.keys(data)[n]
+    
   }
 }
 
