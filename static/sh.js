@@ -1,11 +1,16 @@
-import { getFirst, proxyAbsoluteURL, MESSAGE_TYPES as M, utilListen } from "/utils.js?proxyresource"
+import {
+  getFirst,
+  proxyAbsoluteURL,
+  MESSAGE_TYPES as M,
+  utilListen,
+} from "/utils.js?proxyresource";
 
 function replaceURL(originalURL, currentBase) {
   const params = new URL(originalURL).searchParams;
-  
+
   // this is a proxyresource, which should not be altered
   if (params.has("proxyresource")) return originalURL;
-  return proxyAbsoluteURL(originalURL, currentBase)
+  return proxyAbsoluteURL(originalURL, currentBase);
 }
 
 function getModifications(req) {
@@ -42,12 +47,23 @@ function requestToObject(request) {
   return obj;
 }
 
-function iWantMyCookies(client) {
-  return new Promise(r => {
-    client.postMessage({
-      type: M.COOKIES
-    })
-  })
+function getMessage(type) {
+  return new Promise((r) => {
+    self.addEventListener(
+      "message",
+      utilListen((data) => {
+        if (data.type === type) r(data);
+      }),
+      { once: true }
+    );
+  });
+}
+
+async function iWantMyCookies(client) {
+  client.postMessage({
+    type: M.COOKIES,
+  });
+  return await getMessage(client, M.COOKIES);
 }
 
 async function mockClientRequest(request, id) {
@@ -59,14 +75,15 @@ async function mockClientRequest(request, id) {
       request.url,
       getFirst(new URL(client.url).pathname)
     );
-    
+    const cookies = await iWantMyCookies(client)
+
     client.postMessage({
       type: M.FETCH,
       data: {
         oldURL: request.url,
-        newURL: newURL
-      }
-    })
+        newURL: newURL,
+      },
+    });
 
     const modi = getModifications(request);
 
@@ -81,16 +98,9 @@ async function mockClientRequest(request, id) {
 }
 
 self.addEventListener("install", (e) => {
-  self.skipWaiting()
+  self.skipWaiting();
   e.waitUntil(self.clients.claim());
 });
-
-self.addEventListener("message", utilListen(data => {
-  switch (data.type) {
-    case M.COOKIES:
-      
-  }
-}))
 
 self.addEventListener("fetch", (e) => {
   e.respondWith(mockClientRequest(e.request, e.clientId));

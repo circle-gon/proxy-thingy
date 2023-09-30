@@ -47,10 +47,10 @@ export function proxyAbsoluteURL(originalURL, currentBase = undefined) {
   }
 }
 
-export function utilListen(func) {
+export function utilListen(func, source) {
   return e => {
-    if (location.origin !== e.origin) {
-      console.log("Recieved message from a different origin: " + e.origin);
+    if (location.origin !== e.origin || e.source !== source) {
+      console.log("Invalid response");
     } else {
       func(e.data);
     }
