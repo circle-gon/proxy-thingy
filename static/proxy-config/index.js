@@ -3,7 +3,7 @@
 const VUE_CDN_URL =
   "https://cdn.jsdelivr.net/npm/vue@3.3.4/dist/vue.esm-browser.js";
 
-const TABLE_NAMES = ["Foo", "Bar", "Toast", "egg", "cheese", "about", "spam", "i want your email"]
+const NAVIGATE_NAMES = ["Proxy URLs"]
 
 const components = ({ state, computed }) => {
   const OpenerBtn = {
@@ -21,11 +21,11 @@ const components = ({ state, computed }) => {
       {{state.editorOpened ? "Close" : "Open"}}
     </button>`,
   }
-  const OptionSelector = {
+  const OptionNavigator = {
     setup() {
       return {
         state,
-        names: TABLE_NAMES
+        names: NAVIGATE_NAMES
       }
     },
     template: `
@@ -61,27 +61,27 @@ const components = ({ state, computed }) => {
     </div>
     `
   }
-  const EditModal = {
+  const OptionModal = {
     setup() {
       return {
         state
       }
     },
     components: {
-      OptionSelector,
+      OptionNavigator,
       OptionContent
     },
     template: `
     <div id="edit-modal" v-if="state.editorOpened">
       <div id="modal-content">
-        <OptionSelector />
+        <OptionNavigator />
         <OptionContent />
       </div>
     </div>`
   }
   return {
     OpenerBtn,
-    EditModal
+    OptionModal
   }
 };
 
@@ -115,7 +115,7 @@ const ConfigElement = class extends HTMLElement {
       components: components({ state, computed }),
       template: `
         <OpenerBtn />
-        <EditModal />
+        <OptionalModal />
       `,
     });
     

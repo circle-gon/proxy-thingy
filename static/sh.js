@@ -72,9 +72,14 @@ async function mockClientRequest(request, id) {
   return await fetch(request);
 }
 
-self.addEventListener("activate", (e) => {
+self.addEventListener("install", (e) => {
+  self.skipWaiting()
   e.waitUntil(self.clients.claim());
 });
+
+self.addEventListener("message", e => {
+  console.log("Boo!")
+})
 
 self.addEventListener("fetch", (e) => {
   e.respondWith(mockClientRequest(e.request, e.clientId));

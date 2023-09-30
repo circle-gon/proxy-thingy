@@ -43,6 +43,7 @@
 .selector {
   border: 2px solid white;
   height: 100px;
+  text-align: center;
 }
 
 .active {
@@ -50,8 +51,8 @@
 }
 
 #config-content {
-  width: calc(60% - px);
-  height: 100%;
+  width: calc(60% - 6px);
+  height: calc(100% - 4px);
   border: 2px solid red;
   margin-left: 2px;
   float: right;
