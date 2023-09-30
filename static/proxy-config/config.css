@@ -12,20 +12,20 @@
 
 #edit-modal {
   position: absolute;
-  left: 25px;
-  top: 25px;
-  width: calc(100% - 50px);
-  height: calc(100% - 50px);
+  left: 60px;
+  top: 60px;
+  width: calc(100% - 120px);
+  height: calc(100% - 120px);
   background: green;
-  border-radius: 1%;
+  border-radius: calc(20px + 1%);
 }
 
 #modal-content {
   position: absolute;
-  left: 1%;
-  top: 1%;
-  width: 98%;
-  height: 98%;
+  left: calc(20px + 1%);
+  top: calc(20px + 1%);
+  width: calc(98% - 40px);
+  height: calc(98% - 40px);
 }
 
 #selector-parent {

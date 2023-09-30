@@ -3,7 +3,7 @@ import {
   proxyAbsoluteURL,
   isValidURL,
   MESSAGE_TYPES as M,
-  utilListen
+  utilListen,
 } from "/utils.js?proxyresource";
 import { mountConfig } from "/proxy-config/index.js?proxyresource";
 
@@ -90,6 +90,7 @@ async function addSW() {
 }
 
 const thingies = [];
+window.thingies = thingies;
 
 async function acquireSW() {
   activeSW = (await navigator.serviceWorker.ready).active;
@@ -102,10 +103,10 @@ function swListen() {
     utilListen((data) => {
       switch (data.type) {
         case M.FETCH:
-          thingies.push(data.data)
-          break
+          thingies.push(data.data);
+          break;
         default:
-          throw new TypeError("What did you send? (" + data.type + ")")
+          throw new TypeError("What did you send? (" + data.type + ")");
       }
     })
   );
@@ -116,12 +117,13 @@ function swListen() {
 }
 
 async function swInit() {
-  try {
-    swListen();
-    await Promise.allSettled([acquireSW(), addSW()]);
-  } catch (e) {
-    alert("SW thing failed: " + e.toString());
-    console.error(e);
+  swListen();
+  const results = await Promise.allSettled([acquireSW(), addSW()]);
+  for (const result of results) {
+    if (result.status === "rejected") {
+      alert("Failed: " + result.reason.toString());
+      console.error(result.reason);
+    }
   }
 }
 
