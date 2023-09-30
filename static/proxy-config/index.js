@@ -27,7 +27,9 @@ const components = ({ state }) => ({
     },
     template: `
     <div id="edit-modal" v-if="state.editorOpened">
+      <div id="modal-content">
       Boo!
+      </div>
     </div>`
   }
 });
@@ -60,11 +62,6 @@ const ConfigElement = class extends HTMLElement {
     const { OpenerBtn, EditModal } = components({ state });
 
     const app = createApp({
-      data() {
-        return {
-          count: 0,
-        };
-      },
       components: {
         OpenerBtn,
         EditModal
