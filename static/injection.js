@@ -213,7 +213,9 @@ function overwriteProto(base, key, objToBind, methodOverwrite) {
 }
 
 function overwriteStorage() {
-   const 
+   overwriteProto(Storage.prototype, "getItem", (original, thing) => {
+     return JSON.parse(original("thing"))[thing]
+   })
 }
 
 function init() {
