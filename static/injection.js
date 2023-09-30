@@ -244,8 +244,10 @@ function overwriteStorage() {
   Storage.prototype.setItem = function (name, value) {
     stringCheck(arguments.length, "setItem", name, value);
     const data = easyGet(this);
+    console.log(data, name, value)
     data[name] = String(value);
     original.setItem.call(this, proxyBase, JSON.stringify(data));
+    console.log(original.getItem.call(this, proxyBase))
   };
   Storage.prototype.removeItem = function (name) {
     stringCheck(arguments.length, "removeItem", name);
