@@ -233,15 +233,21 @@ function overwriteStorage() {
       }
     };
   }
+  
+  function dblCheck(thisArg) {
+    if (thisArg === window) throw new TypeError("Illegal invocation")
+  }
 
   const stringCheck = sanityCheck("string");
   const numberCheck = sanityCheck("number");
 
   Storage.prototype.getItem = function (name) {
+    dblCheck(this)
     stringCheck(arguments.length, "getItem", name);
     return easyGet(this)[name] ?? null;
   };
   Storage.prototype.setItem = function (name, value) {
+    dblCheck(this)
     stringCheck(arguments.length, "setItem", name, value);
     const data = easyGet(this);
     //console.log(data, name, value)
@@ -250,6 +256,7 @@ function overwriteStorage() {
     //console.log(original.getItem.call(this, proxyBase))
   };
   Storage.prototype.removeItem = function (name) {
+    dblCheck(this)
     stringCheck(arguments.length, "removeItem", name);
     const data = easyGet(this);
     delete data[name];
@@ -258,12 +265,12 @@ function overwriteStorage() {
     else this.clear();
   };
   Storage.prototype.key = function (n) {
+    dblCheck(this)
     numberCheck(arguments.length, "key", n);
-    const data = easyGet(this);
-    const key = Object.keys(data)[n];
-    return data[key] ?? null;
+    return Object.keys(easyGet(this))[n] ?? null;
   };
   Storage.prototype.clear = function () {
+    dblCheck(this)
     original.removeItem.call(this, proxyBase);
   };
   Object.defineProperty(Storage.prototype, "length", {
