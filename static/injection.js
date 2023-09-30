@@ -288,8 +288,16 @@ function overwriteStorage() {
       target.setItem(prop)
       return true
     }
-    
   })
+  
+  FakeStorage.prototype = real
+  Object.defineProperty(FakeStorage, "name", {
+    value: "Storage",
+    configurable: true
+  })
+  
+  Object.setPrototypeOf(FakeStorage.prototype, Storage)
+  window.Storage = FakeStorage
 }
 
 function init() {
