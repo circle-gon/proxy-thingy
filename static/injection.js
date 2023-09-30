@@ -268,7 +268,6 @@ function overwriteStorage() {
   };
   Object.defineProperty(Storage.prototype, "length", {
     get() {
-      console.log(this)
       return Object.keys(easyGet(this)).length;
     },
   });
